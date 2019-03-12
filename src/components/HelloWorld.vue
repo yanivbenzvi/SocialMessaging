@@ -20,7 +20,7 @@
         name: 'HelloWorld',
         props: {
             msg: String
-        }
+        },
     };
 </script>
 

@@ -1,10 +1,23 @@
 <template>
     <v-app dark>
-        <v-toolbar app dark color="primary">
-            <v-icon>{{app_icon}}</v-icon>
-            <v-toolbar-title>{{title}}</v-toolbar-title>
+        <v-toolbar color="grey darken-1" dark>
+            <v-toolbar-side-icon></v-toolbar-side-icon>
+
             <v-spacer></v-spacer>
+
+            <v-btn icon>
+                <v-icon>search</v-icon>
+            </v-btn>
+
+            <v-btn icon>
+                <v-icon>favorite</v-icon>
+            </v-btn>
+
+            <v-btn icon>
+                <v-icon>more_vert</v-icon>
+            </v-btn>
         </v-toolbar>
+
         <v-content>
             <HelloWorld v-bind:msg="body_message"/>
         </v-content>
