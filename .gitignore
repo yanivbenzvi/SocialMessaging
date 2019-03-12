@@ -11,6 +11,8 @@ node_modules
 
 
 # User-specific stuff
+dist
+dist_electron/
 .idea
 .idea/**/workspace.xml
 .idea/**/tasks.xml

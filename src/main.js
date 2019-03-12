@@ -1,22 +1,26 @@
 import './bootstrap'
-import '@babel/polyfill';
-import Vue from 'vue';
-import './plugins/vuetify';
-import App from './App.vue';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
+import App    from './App'
+import '@babel/polyfill';
+import Vue from 'vue'
+import './plugins/vuetify';
+import router from './router'
 
 Vue.config.productionTip = false;
 
 export const appData = {
     app_icon: 'code',
-    body_message: 'Hello world!',
     footer_message: 'Made with ❤️ in Mountain View, California',
     title: 'Vue, Vuetify, Webpack',
-    time: new Date(),
 };
 
-setInterval(() => {
-    appData.time = new Date()
-}, 1000);
 
-new Vue({render: h => h(App)}).$mount('#app');
+
+// 4. Create and mount the root instance.
+// Make sure to inject the router with the router option to make the
+// whole app router-aware.
+new Vue({
+    router,
+    render: h => h(App)
+}).$mount('#app')
+
