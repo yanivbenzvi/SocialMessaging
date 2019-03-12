@@ -1,0 +1,8 @@
+version: 0.1.0
+files:
+  - url: vue_app-setup-0.1.0.exe
+    sha512: 7fsUySYzn2T/WEcSQgOzreNsuzEk5IsegIA2X0dU/RZJEdpr+djjhrcZeRjYMqcLpZGpeUMrezWA9FYFRur6qw==
+    size: 37800499
+path: vue_app-setup-0.1.0.exe
+sha512: 7fsUySYzn2T/WEcSQgOzreNsuzEk5IsegIA2X0dU/RZJEdpr+djjhrcZeRjYMqcLpZGpeUMrezWA9FYFRur6qw==
+releaseDate: '2019-03-12T11:54:19.717Z'

@@ -1,0 +1,2 @@
+import './setConfigurations'
+import './registerComponents'
