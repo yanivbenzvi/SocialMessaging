@@ -1,7 +1,8 @@
 
+
 export class facebook{
-    constructor() {
-
+    constructor(accsessToken) {
+        this.facebookObj =
+        this.accsessToken = accsessToken
     }
-
 }
