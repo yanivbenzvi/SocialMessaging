@@ -2,7 +2,7 @@
 const Twitter = require('twitter');
 
 
-class Twitter_api{
+export class TwitterAPI{
 
     // should be private
     static options() {
@@ -16,12 +16,21 @@ class Twitter_api{
 
     constructor(access_token_key = null,access_token_secret = null) {
         //setup of login settings
-        let options = Twitter_api.options();
+        let options = TwitterAPI.options();
         if (access_token_key != null) options.access_token_key = access_token_key;
         if (access_token_secret != null) options.access_token_secret = access_token_secret;
 
 
         this.client = new Twitter(options)
+    }
+
+    async is_logged_in(){
+        try{
+            await this.client.pull('statuses/show/a',{});
+        }
+        catch (err){   
+            return (err[0].code == '34');
+        }
     }
 
     /**
@@ -34,6 +43,7 @@ class Twitter_api{
     async post(message) {
         try{
             let json = await this.client.post('statuses/update', {status: message});
+            await this.client.post('favorites/create/', {id:json.id_str});
             return json.id_str;
         }
         catch (err){
@@ -59,6 +69,15 @@ class Twitter_api{
         }
     }
     
+    async pull_all(){
+        try{
+            let json = await this.client.get("favorites/list",{});
+            return json.map(el=>{return {id: el.id_str, message: el.text}});
+        }
+        catch (err){
+            console.log(err);
+        }
+    }
     /**
      * async, destroys message using message id;
      * returns boolean
@@ -84,7 +103,7 @@ class Twitter_api{
 function test(){
     const fs = require('fs');
     var message = "im a test";
-    twitt = new Twitter_api(); 
+    twitt = new TwitterAPI(); 
     twitt.post(message).then(id=>{
         fs.writeFile("./message.txt", id,(err)=>{
             if(err) {
@@ -102,7 +121,3 @@ function test(){
         })
     }).catch(console.log);
 }
-
-test()
-
-module.exports = Twitter_api
