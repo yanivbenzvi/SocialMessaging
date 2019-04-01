@@ -26,7 +26,7 @@ export class TwitterAPI{
 
     async is_logged_in(){
         try{
-            await this.client.get('statuses/show/a',{});
+            await this.pull('a');
         }
         catch (err){   
             try{
@@ -46,14 +46,9 @@ export class TwitterAPI{
      * @returns {PromiseLike<string>} 
      */
     async post(message) {
-        try{
-            let json = await this.client.post('statuses/update', {status: message});
-            await this.client.post('favorites/create/', {id:json.id_str});
-            return json.id_str;
-        }
-        catch (err){
-            console.log(err);
-        }
+        let json = await this.client.post('statuses/update', {status: message});
+        await this.client.post('favorites/create/', {id:json.id_str});
+        return json.id_str;
     }
     
     /**
@@ -64,28 +59,18 @@ export class TwitterAPI{
      * @returns {PromiseLike<string>} 
      */
     async pull(id) {
-        try{
-            let stat = 'statuses/show/' + id;
-            let json = await this.client.get(stat,{});
-            return json.text;
-        }
-        catch (err){
-            console.log(err);
-        }
+        let stat = 'statuses/show/' + id;
+        let json = await this.client.get(stat,{});
+        return json.text;
     }
     
     async pull_all(){
-        try{
-            let json = await this.client.get("favorites/list",{});
-            return json.map(el=>{return {id: el.id_str, message: el.text}});
-        }
-        catch (err){
-            console.log(err);
-        }
+        let json = await this.client.get("favorites/list",{});
+        return json.map(el=>{return {id: el.id_str, message: el.text}});
     }
     /**
      * async, destroys message using message id;
-     * returns boolean
+     * returns true of message destroyed, else false
      * 
      * @param {String} id
      * @returns {PromiseLike<boolean>} 
@@ -93,36 +78,11 @@ export class TwitterAPI{
     async destroy(id) {
         try{
             let stat = 'statuses/destroy/' + id;
-            console.log(stat);
             let json = await this.client.post(stat,{});
-            console.log("the message '"+json.text+"' deleted");
             return true;
         }
         catch (err){
-            console.log(err);
             return false;
         }
     }
-}
-
-function test(){
-    const fs = require('fs');
-    var message = "im a test";
-    twitt = new TwitterAPI(); 
-    twitt.post(message).then(id=>{
-        fs.writeFile("./message.txt", id,(err)=>{
-            if(err) {
-                console.log(err)
-            }
-            else {
-                console.log("written to file")
-            }
-        });
-        twitt.pull(id).then(text=>{
-            if (text == message){
-                console.log("the message '" + message +"' was infact posted, with id: " + id);
-            }
-            twitt.destroy(id)
-        })
-    }).catch(console.log);
 }
