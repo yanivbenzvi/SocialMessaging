@@ -26,10 +26,15 @@ export class TwitterAPI{
 
     async is_logged_in(){
         try{
-            await this.client.pull('statuses/show/a',{});
+            await this.client.get('statuses/show/a',{});
         }
         catch (err){   
-            return (err[0].code == '34');
+            try{
+                return (err[0].code == '34');
+            }
+            catch{
+                return false;
+            }
         }
     }
 
