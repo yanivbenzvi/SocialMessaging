@@ -43,26 +43,32 @@ describe('Rsa', () => {
     })
 
     describe('#importPublicKey', () => {
-        it('import public key', () => {
+        it('import public key', async () => {
             let stub = new Rsa()
             expect(stub.exportPublicKey()).to.be.not.eql(mock.publicKey)
-            stub.importPublicKey(mock.publicKey)
+            await stub.importPublicKey(mock.publicKey)
             expect(stub.exportPublicKey()).to.be.eql(mock.publicKey)
         })
     })
 
     describe('#importPrivateKey', () => {
-        it('import Private Key', () => {
+        it('import Private Key', async () => {
             let stub = new Rsa()
-            stub.importPrivateKey(mock.privateKey)
+            await stub.importPrivateKey(mock.privateKey)
             expect(stub.decrypt(mock.encryptedText)).to.be.eql('hello world')
         })
     })
 
-    describe('encrypt and decrypte message between 2 object', () => {
+    describe('encrypt and decrypt message between 2 object', () => {
         let a = new Rsa()
         let b = new Rsa()
 
 
+    })
+
+    describe('#maxMessageSize',()=>{
+        it('max message size',()=>{
+            expect(stub.maxMessageSize()).to.be.eql(0)
+        })
     })
 })

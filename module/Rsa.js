@@ -37,12 +37,12 @@ export class Rsa {
      * Import external Rsa public key.
      * @param {String} RsaPublicKey
      */
-    importPublicKey(RsaPublicKey) {
-        this.RsaModule.importKey(RsaPublicKey)
+    async importPublicKey(RsaPublicKey) {
+        await this.RsaModule.importKey(RsaPublicKey)
     }
 
-    importPrivateKey(RsaPrivateKey) {
-        this.RsaModule.importKey(RsaPrivateKey, 'pkcs1')
+    async importPrivateKey(RsaPrivateKey) {
+        await this.RsaModule.importKey(RsaPrivateKey, 'pkcs1')
     }
 
     /**
