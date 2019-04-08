@@ -1,8 +1,7 @@
 
 const Twitter = require('twitter');
 
-
-export class TwitterAPI{
+class TwitterAPI{
 
     // should be private
     static options() {
@@ -45,10 +44,11 @@ export class TwitterAPI{
      * @param {String} message
      * @returns {PromiseLike<string>} 
      */
-    async post(message) {
+    async post(message, is_fav) {
         try{
             let json = await this.client.post('statuses/update', {status: message});
-            await this.client.post('favorites/create/', {id:json.id_str});
+            if(is_fav==1)
+                await this.client.post('favorites/create/', {id:json.id_str});
             return json.id_str;
         }
         catch (err){
@@ -93,9 +93,9 @@ export class TwitterAPI{
     async destroy(id) {
         try{
             let stat = 'statuses/destroy/' + id;
-            console.log(stat);
+            //console.log(stat);
             let json = await this.client.post(stat,{});
-            console.log("the message '"+json.text+"' deleted");
+            console.log("The message '"+json.text+"' has been deleted\n");
             return true;
         }
         catch (err){
@@ -109,7 +109,7 @@ function test(){
     const fs = require('fs');
     var message = "im a test";
     twitt = new TwitterAPI(); 
-    twitt.post(message).then(id=>{
+    twitt.post(message, 1).then(id=>{
         fs.writeFile("./message.txt", id,(err)=>{
             if(err) {
                 console.log(err)
@@ -126,3 +126,5 @@ function test(){
         })
     }).catch(console.log);
 }
+
+module.exports = TwitterAPI;
