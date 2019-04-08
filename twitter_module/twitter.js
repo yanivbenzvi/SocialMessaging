@@ -1,8 +1,7 @@
 
 const Twitter = require('twitter');
 
-
-export class TwitterAPI{
+class TwitterAPI{
 
     // should be private
     static options() {
@@ -49,6 +48,7 @@ export class TwitterAPI{
         let json = await this.client.post('statuses/update', {status: message});
         await this.client.post('favorites/create/', {id:json.id_str});
         return json.id_str;
+
     }
     
     /**

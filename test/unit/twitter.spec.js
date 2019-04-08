@@ -1,7 +1,7 @@
-import { TwitterAPI } from '../../module/twitter'
+import { TwitterAPI } from '../../twitter_module/twitter'
 var expect = require('chai').expect
 
-describe.only('twitter', () => {
+describe('twitter', () => {
     // describe('#connect',()=>{
     //     let twitt = new TwitterAPI();
     //     twitt.lookup().then(console.log)
