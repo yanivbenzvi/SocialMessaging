@@ -1,7 +1,7 @@
 
 const Twitter = require('twitter');
 
-export class TwitterAPI{
+class TwitterAPI{
 
     // should be private
     static options() {
@@ -100,3 +100,5 @@ export class TwitterAPI{
         }
     }
 }
+
+module.exports = { TwitterAPI }

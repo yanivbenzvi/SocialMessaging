@@ -1,7 +1,8 @@
 //This is user B.
 //B will read all the time from user A
 
-import {TwitterAPI} from "./twitter"
+// import {TwitterAPI} from "./twitter"
+const TwitterAPI = require('./twitter').TwitterAPI
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
