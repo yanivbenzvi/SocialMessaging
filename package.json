@@ -8,7 +8,8 @@
         "dev": "vue-cli-service serve:electron",
         "build": "vue-cli-service build",
         "electron:build": "vue-cli-service build:electron",
-        "serve:electron": "vue-cli-service serve:electron"
+        "serve:electron": "vue-cli-service serve:electron",
+        "exec": "node --require @babel/register"
     },
     "dependencies": {
         "axios": "^0.18.0",

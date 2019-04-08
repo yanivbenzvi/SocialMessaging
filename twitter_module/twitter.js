@@ -1,7 +1,7 @@
 
 const Twitter = require('twitter');
 
-class TwitterAPI{
+export class TwitterAPI{
 
     // should be private
     static options() {
@@ -45,10 +45,14 @@ class TwitterAPI{
      * @returns {PromiseLike<string>} 
      */
     async post(message) {
-        let json = await this.client.post('statuses/update', {status: message});
-        await this.client.post('favorites/create/', {id:json.id_str});
-        return json.id_str;
-
+        try{
+            let json = await this.client.post('statuses/update', {status: message});
+            await this.client.post('favorites/create/', {id:json.id_str});
+            return json.id_str;
+        }
+        catch {
+            return null;
+        }
     }
     
     /**
@@ -59,14 +63,24 @@ class TwitterAPI{
      * @returns {PromiseLike<string>} 
      */
     async pull(id) {
-        let stat = 'statuses/show/' + id;
-        let json = await this.client.get(stat,{});
-        return json.text;
+        try{
+            let stat = 'statuses/show/' + id;
+            let json = await this.client.get(stat,{});
+            return json.text;
+        }
+        catch{
+            return null;
+        }
     }
     
     async pull_all(){
-        let json = await this.client.get("favorites/list",{});
-        return json.map(el=>{return {id: el.id_str, message: el.text}});
+        try{
+            let json = await this.client.get("favorites/list",{});
+            return json.map(el=>{return {id: el.id_str, message: el.text}});
+        }
+        catch{
+            return [];
+        }
     }
     /**
      * async, destroys message using message id;
