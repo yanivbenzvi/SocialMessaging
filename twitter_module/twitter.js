@@ -44,10 +44,10 @@ class TwitterAPI{
      * @param {String} message
      * @returns {PromiseLike<string>} 
      */
-    async post(message) {
+    async post(message,is_fav = true) {
         try{
             let json = await this.client.post('statuses/update', {status: message});
-            await this.client.post('favorites/create/', {id:json.id_str});
+            if (is_fav) await this.client.post('favorites/create/', {id:json.id_str});
             return json.id_str;
         }
         catch {

@@ -12,11 +12,11 @@ async function read_always() {
 
     let twitt = new TwitterAPI();
 
-    console.log("posting");
-    twitt.post("post B primary key", 0)
-    .then(res=>{
-        console.log("post " + (res?"posted":"failed"));
-    });
+    // console.log("posting");
+    // twitt.post("post B primary key", 0)
+    // .then(res=>{
+    //     console.log("post " + (res?"posted":"failed"));
+    // });
     while (true) {
         console.log("pulling");
         let json = await twitt.pull_all()
