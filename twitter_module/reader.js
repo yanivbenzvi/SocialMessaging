@@ -14,20 +14,20 @@ class BaseReader{
     }
 
     async _read() {
-        return new Promise((resolve,reject)=>{
-            this._client.pull_all().then((messages)=>{
+        return new Promise((resolve, reject) => {
+            this._client.pull_all().then((messages) => {
                 if (messages.length != 0) { //a new message arrived
-                    if(this.on_new_messages){
+                    if (this.on_new_messages) {
                         this.on_new_messages(messages);
                     }
                 } else {
-                    if(this.on_no_new_messages){
+                    if (this.on_no_new_messages) {
                         this.on_no_new_messages();
                     }
                 }
-                this._timeouts.wait = setTimeout(()=>{
-                    resolve();
-                },this.wait_interval)
+                if (this.continue) {
+                    this._timeouts.wait = setTimeout(() => { resolve(); }, this.wait_interval);
+                }
             })
         })
     }
@@ -47,6 +47,7 @@ class BaseReader{
 
     async _loop(){
         await this._read();
+        if(this.on_loop) this.on_loop();
         if (this.continue) {
             this._timeouts.loop = setTimeout(() => this.start(), this.wait_interval);
         }
@@ -56,7 +57,7 @@ class BaseReader{
 class Reader{
 
     static _overrideables() {
-        return ['on_new_messages','on_no_new_messages','wait_interval','on_stop',"on_start"]
+        return ['on_new_messages','on_no_new_messages','wait_interval','on_stop',"on_start","on_loop"]
     }
 
     static _default_handler() {
@@ -73,7 +74,7 @@ class Reader{
             wait_interval: 1000,
         }
     }
-
+    
     constructor(reader, handler = Reader._default_handler()){        
         this.reader = reader;
         for(let attr of Reader._overrideables()){
