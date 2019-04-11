@@ -3,6 +3,8 @@ import { BaseReader, Reader } from '../../twitter_module/reader'
 
 const expect = require('chai').expect
 
+
+// #TODO add proper tests
 describe.only('Reader', () => {
     describe('#read_always', () => {
         it("should stop reading after a single pull", ()=>{
