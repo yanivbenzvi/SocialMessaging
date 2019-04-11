@@ -1,14 +1,12 @@
-import { read } from "fs";
-import { resolve } from "dns";
-
 //This is user B.
 //B will read all the time from user A
+const utils = require('./utils');
+const TwitterAPI = require('./twitter').TwitterAPI;
 
+class Reader{
 
-class BaseReader{
-
-    constructor(twitterApi){
-        this._client = twitterApi;
+    constructor(twitter = new TwitterAPI()){
+        this._client = twitter;
         this.wait_interval = 0;
         this._timeouts = {};
     }
@@ -52,9 +50,8 @@ class BaseReader{
             this._timeouts.loop = setTimeout(() => this.start(), this.wait_interval);
         }
     }
-}
 
-class Reader{
+    ///////////////////////////////////////////////////////// observe
 
     static _overrideables() {
         return ['on_new_messages','on_no_new_messages','wait_interval','on_stop',"on_start","on_loop"]
@@ -74,22 +71,19 @@ class Reader{
             wait_interval: 1000,
         }
     }
-    
-    constructor(reader, handler = Reader._default_handler()){        
-        this.reader = reader;
-        for(let attr of Reader._overrideables()){
-            if(attr in handler)
-                this.reader[attr] = handler[attr];
+
+    handle(handler = Reader._default_handler()){
+        for (let attr of Reader._overrideables()) {
+            if (attr in handler) {
+                if (attr in this && utils.is_function(this[attr]) && utils.is_function(handler[attr])) {
+                    this[attr] = utils.concat_functions(this[attr], handler[attr])
+                }
+                else
+                    this[attr] = handler[attr];
+            }
         }
-    }
-
-    stop(){
-        this.reader.stop();
-    }
-
-    async start() {
-        await this.reader.start();
     }
 }
 
-module.exports = { Reader , BaseReader };
+
+module.exports = { Reader };
