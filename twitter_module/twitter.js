@@ -25,7 +25,7 @@ class TwitterAPI{
 
     async is_logged_in(){
         try{
-            await this.pull('a');
+            await this.client.get('statuses/show/a',{});
         }
         catch (err){   
             try{
