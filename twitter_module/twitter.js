@@ -99,6 +99,11 @@ class TwitterAPI{
             return false;
         }
     }
+    async destroy_all(messages_ids){
+        for(let id of messages_ids){
+            this.destroy(id);
+        }
+    }
 
 
 }

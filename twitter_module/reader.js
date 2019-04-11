@@ -24,7 +24,7 @@ class Reader{
                     }
                 }
                 if (this.continue) {
-                    this._timeouts.wait = setTimeout(() => { resolve(); }, this.wait_interval);
+                    this._timeouts.wait = setTimeout( () => {resolve();}, this.wait_interval );
                 }
             })
         })
@@ -86,4 +86,20 @@ class Reader{
 }
 
 
-module.exports = { Reader };
+function destroy_all(){
+    let reader = new Reader();
+    let handler = {
+        on_new_messages: (messages) => {
+            reader._client.destroy_all(messages.map(message=>message.id));
+        },
+        on_no_new_messages: () => {
+            console.log("destroyed all");
+            reader.stop();
+        },
+        wait_interval:0,
+    }
+    reader.handle(handler);
+    reader.start();
+}
+
+module.exports = { Reader , destroy_all};

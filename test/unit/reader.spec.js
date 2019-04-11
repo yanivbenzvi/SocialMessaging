@@ -52,11 +52,12 @@ describe('Reader', () => {
     // describe("test", () => {
     //     it("should be funny", async () => {
     //         let r = new Reader();
-    //         r.handle({on_start:()=>{console.log("r1");}})
-    //         r.handle({on_start:()=>{console.log("r2");}})
+    //         // r.handle({on_start:()=>{console.log("r1");}})
+    //         // r.handle({on_start:()=>{console.log("r2");}})
+    //         r.handle();
     //         r.start();
     //         await new Promise((resolve,reject)=>{
-    //             setTimeout(()=>{resolve()} , 500);
+    //             setTimeout(()=>{resolve()} , 1000);
     //         })
     //         r.stop();
     //     })
