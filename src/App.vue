@@ -13,9 +13,6 @@
             <v-btn icon to="/">
                 <v-icon>home</v-icon>
             </v-btn>
-            <v-btn icon>
-                <v-icon>search</v-icon>
-            </v-btn>
 
             <v-btn icon>
                 <v-icon>favorite</v-icon>
@@ -31,13 +28,13 @@
                     <router-view></router-view>
             </transition>
         </v-content>
-        <v-footer app>
+        <!--<v-footer app>
             <v-spacer></v-spacer>
-            <span class="surface--text">
+            <span class="surface&#45;&#45;text">
                 some text
             </span>
             <v-spacer></v-spacer>
-        </v-footer>
+        </v-footer>-->
     </v-app>
 </template>
 
