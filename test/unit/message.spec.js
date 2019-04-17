@@ -5,7 +5,7 @@ const expect = chai.expect;
 const should = chai.should;
 
 
-describe.only('Message', () => {
+describe('Message', () => {
     describe('#Object', () => {
         let message = new Message();
         let input = {
