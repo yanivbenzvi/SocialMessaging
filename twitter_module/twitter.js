@@ -99,6 +99,14 @@ class TwitterAPI{
             return false;
         }
     }
+
+    static get_client(...params){
+        var client;
+        if (client)
+            return client;
+        client = new TwitterAPI(...params);
+        return client;
+    }
 }
 
 module.exports = { TwitterAPI }

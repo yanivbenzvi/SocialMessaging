@@ -7,14 +7,7 @@ const readline = require('readline');
 
 
 
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-
 async function ask_for_input() {
-
     let twitt = new TwitterAPI();
     var stdin = process.openStdin();
     console.log("awating input: ");
