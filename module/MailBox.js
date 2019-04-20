@@ -1,4 +1,4 @@
-import {Message} from 'module/Message'
+import {Message} from './Message'
 
 /**this is the main mail box class*/
 export class MailBox {
@@ -14,23 +14,22 @@ export class MailBox {
         this.sent_messages       = []
         this.messages_queue      = []
         this.newMessagesArrIndex = []
-
     }
 
     /**
-     * this function will get a mail box address and a text to send
-     * and will push the message to the message queue
+     * This function will get a mail box address and a text to send
+     * and will push the message to the message queue.
      */
     sendMessage(to, textMessage) {
         let messageObject = {
             to:          to,
-            address:     this.address,
+            from:        this.ownerName,
+            address:     this.ownerName,
             timeStamp:   new Date(),
             textMessage: textMessage,
         }
-        let message       = new Message(messageObject)
 
-        this.sent_messages.push(message)
+        let message = new Message(messageObject)
         this.messages_queue.push(message)
     }
 
@@ -39,7 +38,7 @@ export class MailBox {
      * @returns {Number}
      */
     checkForNewMessages() {
-        return this.received_messages.filter(message => message === false).length
+        return this.received_messages.filter(message => message.readed === false).length
     }
 
     /**
@@ -58,6 +57,7 @@ export class MailBox {
     getAllMessages() {
         return Array.from(this.received_messages)
                     .concat(this.sent_messages)
+                    .concat(this.messages_queue)
                     .sort((message1, message2) => {
                         return message1.timeStamp < message2.timeStamp
                     })

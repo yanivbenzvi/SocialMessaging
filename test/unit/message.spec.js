@@ -4,9 +4,10 @@ const expect = require('chai').expect
 
 describe('Message', () => {
     it('has the follow attribute', () => {
-        const stub = new Message()
-        const attribute = Object.keys(stub)
+        const message      = new Message()
+        const stub = Object.keys(message)
+        const attribute = ['to', 'from', 'timeStamp', 'textMessage', 'readed', 'mKey']
 
-        expect(attribute).to.be.eql(['to', 'from', 'timeStamp'])
+        expect(stub).to.be.eql(attribute)
     })
 })

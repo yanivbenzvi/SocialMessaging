@@ -1,5 +1,5 @@
+import md5 from 'md5'
 export class Message {
-
     /**
      * Message constructor.
      * @param {Object} message
@@ -12,7 +12,6 @@ export class Message {
         this.timeStamp   = timeStamp
         this.textMessage = textMessage
         this.readed      = false
-        this.mKey        = to + from + timeStamp
-        //this.mKey        = this.mKey.replace(/ /g, '')/**this is the key of the message*/
+        this.mKey        = md5(to + from + timeStamp)
     }
 }
