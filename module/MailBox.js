@@ -56,12 +56,10 @@ export class MailBox {
      * @returns {Array<Message>}
      */
     getAllMessages() {
-        let AllMessages = []
-
-        return AllMessages.concat(this.received_messages)
-                          .concat(this.sent_messages)
-                          .sort((message1, message2) => {
-                              return message1.timeStamp < message2.timeStamp
-                          })
+        return Array.from(this.received_messages)
+                    .concat(this.sent_messages)
+                    .sort((message1, message2) => {
+                        return message1.timeStamp < message2.timeStamp
+                    })
     }
 }
