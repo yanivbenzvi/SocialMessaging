@@ -1,11 +1,13 @@
 import NodeRSA from 'node-rsa'
 
-
+/**
+ *
+ */
 export class Rsa {
 
     constructor() {
-        var signingSchemes = ['pkcs1', 'pss']
-        var signHashAlgorithms = {
+        let signingSchemes = ['pkcs1', 'pss']
+        let signHashAlgorithms = {
             'node': ['MD4', 'MD5', 'RIPEMD160', 'SHA1', 'SHA224', 'SHA256', 'SHA384', 'SHA512'],
             'browser': ['MD5', 'RIPEMD160', 'SHA1', 'SHA256', 'SHA512']
         }
@@ -19,9 +21,18 @@ export class Rsa {
         //should be remove
     }
 
+    /**
+     *
+     * @param plainText
+     */
     encrypt3dKey(plainText) {
     }
 
+    /**
+     *
+     * @param plainText
+     * @return {*}
+     */
     encrypt(plainText) {
         return this.RsaModule.encrypt(plainText, 'base64')
     }
@@ -29,6 +40,11 @@ export class Rsa {
     decrypt3dKey(encryptText, key) {
     }
 
+    /**
+     *
+     * @param encryptText
+     * @return {*}
+     */
     decrypt(encryptText) {
         return this.RsaModule.decrypt(encryptText, 'utf8')
     }
@@ -41,6 +57,11 @@ export class Rsa {
         await this.RsaModule.importKey(RsaPublicKey)
     }
 
+    /**
+     *
+     * @param RsaPrivateKey
+     * @return {Promise<void>}
+     */
     async importPrivateKey(RsaPrivateKey) {
         await this.RsaModule.importKey(RsaPrivateKey, 'pkcs1')
     }
