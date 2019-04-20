@@ -14,6 +14,7 @@
     "dependencies": {
         "axios": "^0.18.0",
         "lodash": "^4.17.11",
+        "sinon": "^7.3.2",
         "twitter": "^1.7.1",
         "vue": "^2.6.8",
         "vuetify": "^1.5.5"

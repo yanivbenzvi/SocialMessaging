@@ -10,38 +10,67 @@ function set_options(context, options) {
     }
 }
 
-class Reader{
-    
-    constructor(options){
-        set_options(this,options);
+class Reader {
+
+    constructor(options) {
+        set_options(this, options);
         this._client = TwitterAPI.get_client();
-        if(!this.wait_interval){
+        if (!this.wait_interval) {
             this.wait_interval = 1000;
         }
-        this._loop;
+        this._stop = false
+        this._loop = [];
     }
 
-    read(...args){
+    async get_messages() {
+        return await this._client.pull_all();
+    }
+
+    read(...args) {
         start(...args);
     }
 
     start(message_handler) {
-        this._loop = setInterval(async ()=>{
-            let messages = await this._client.pull_all();
+        this._stop = false
+        let loop = async () => {
+            let messages = await this.get_messages();
             message_handler(messages);
-        },this.wait_interval)
+            if (!this._stop) {
+                this._loop = setTimeout(loop, this.wait_interval)
+            }
+        }
+        loop()
     }
 
-    stop(){ 
+
+    stop() {
         clearTimeout(this._loop);
-    }   
+        this._stop = true
+    }
+
 }
 
 
 module.exports = { Reader };
 
-// let x = new Reader();
-// x.start((messages)=>{
-//     console.log(messages)
-// });
-// setTimeout(()=>{x.stop();console.log("stopped")},7500)
+// function test() {
+//     let x = new Reader({ wait_interval: 10 });
+
+//     var counter = 10
+//     let stop_after_10_message_read = (m) => {
+//         console.log(counter);
+
+//         counter--;
+//         if (counter == 0) {
+//             console.log("stopping");
+//             x.stop()
+//         }
+//     }
+//     x.start(stop_after_10_message_read);
+//     setTimeout(() => {
+//         x.stop(); console.log("stopped")
+//         setTimeout(() => {
+//             console.log("done")
+//         }, 3000)
+//     }, 7000)
+// }
