@@ -8,7 +8,6 @@ export class MailBox {
      * @param MailAddress
      */
     constructor(mailBoxObj = {}) {
-        /the constractor will get the name of the mail box to use as an address/
         this.ownerName           = mailBoxObj.ownerName
         this.received_messages   = []
         this.sent_messages       = []
