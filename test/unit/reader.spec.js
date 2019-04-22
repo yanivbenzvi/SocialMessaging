@@ -1,5 +1,5 @@
 import { TwitterAPI } from '../../module/twitter'
-import { BaseReader, Reader } from '../../module/reader'
+import { Reader } from '../../module/reader'
 
 const chai = require('chai');
 const expect = chai.expect;
