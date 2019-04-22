@@ -1,11 +1,11 @@
-import { Message } from '../../twitter_module/message';
+import { Message } from '../../module/message_pavel';
 
 const chai = require('chai');
 const expect = chai.expect;
 const should = chai.should;
 
 
-describe('Message', () => {
+describe('message_pavel', () => {
     describe('#Object', () => {
         let message = new Message();
         let input = {

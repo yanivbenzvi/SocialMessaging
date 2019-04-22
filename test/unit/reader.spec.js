@@ -1,5 +1,5 @@
-import { TwitterAPI } from '../../twitter_module/twitter'
-import { BaseReader, Reader } from '../../twitter_module/reader'
+import { TwitterAPI } from '../../module/twitter'
+import { BaseReader, Reader } from '../../module/reader'
 
 const chai = require('chai');
 const expect = chai.expect;
@@ -10,7 +10,7 @@ async function sleep(time) {
     return new Promise((resolve, reject) => { setTimeout(() => { resolve() }, time) })
 }
 
-describe.only('Reader', () => {
+describe('Reader', () => {
     describe('#read_always', () => {
         it("should stop reading after 10 reads", async () => {
             let reader = new Reader({ wait_interval: 1 });
