@@ -46,7 +46,7 @@ describe("TwitterAPI", () => {
     })
 
     describe("#get_client",()=>{
-        it.only("should return the same client when used multipule times", ()=>{
+        it("should return the same client when used multipule times", ()=>{
             let first_twitter_client = TwitterAPI.get_client();
             let second_twitter_client = TwitterAPI.get_client();
 
