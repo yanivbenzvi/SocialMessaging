@@ -77,7 +77,6 @@
 
         computed: {
             messages() {
-                console.log(this.mailBox.getAllMessages())
                 return this.mailBox.getAllMessages()
             },
 
@@ -107,7 +106,6 @@
                     return message.to === this.id
                 }).forEach(async message => {
                     this.mailBox.received_messages.push(message)
-                    console.log(message.twitterId)
                     await twitter.destroy(message.twitterId)
                 })
             },
@@ -118,7 +116,6 @@
 
                 this.mailBox.messages_queue.forEach(async message => {
                     let id = await twitter.post(message.to_JSON())
-                    console.log('message id', id)
                 })
                 this.mailBox.sent_messages = this.mailBox.sent_messages.concat(this.mailBox.messages_queue)
                 this.mailBox.messages_queue = []
