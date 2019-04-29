@@ -44,10 +44,6 @@
                             <v-icon left>refresh</v-icon>
                         </v-btn>
 
-                        <v-btn flat>
-                            Delete Twitter messages
-                            <v-icon left>refresh</v-icon>
-                        </v-btn>
                     </v-flex>
                 </v-layout>
             </v-flex>
@@ -94,19 +90,25 @@
             },
 
             async ReceiveNewMessage(){
+                let twitter = TwitterAPI.get_client();
+
                 let reader   = new Reader()
-                let messages = await reader.get_messages()
+
+                let messages = await twitter.pull_all()
 
                 messages.map(obj => {
                     let {id, message} = obj
                     let cur_message   = new Message()
                     cur_message.from_JSON(message)
+                    cur_message.twitterId = id
                     return cur_message
 
                 }).filter((message) => {
                     return message.to === this.id
-                }).forEach(message => {
+                }).forEach(async message => {
                     this.mailBox.received_messages.push(message)
+                    console.log(message.twitterId)
+                    await twitter.destroy(message.twitterId)
                 })
             },
 
@@ -118,7 +120,7 @@
                     let id = await twitter.post(message.to_JSON())
                     console.log('message id', id)
                 })
-                this.mailBox.sent_messages.concat(this.mailBox.messages_queue)
+                this.mailBox.sent_messages = this.mailBox.sent_messages.concat(this.mailBox.messages_queue)
                 this.mailBox.messages_queue = []
             },
 

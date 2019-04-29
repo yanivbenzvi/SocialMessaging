@@ -5,7 +5,7 @@ export class Message {
      * @param {Object} message
      */
     constructor(message = {}) {
-        const { to, from, time, body } = message
+        const { to, from, time, body, twitterId} = message
 
         this.to = to
         this.from = from
@@ -13,6 +13,7 @@ export class Message {
         this.body = body
         this.readed = false
         this.mKey = md5(to + from + time)
+        this.twitterId = twitterId
     }
 
     from_object(obj) {
