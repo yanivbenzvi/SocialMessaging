@@ -8,7 +8,7 @@
                         <v-flex xs3>
                             <v-card class="my-2 mx-12" transition="scale-transition">
                                 <v-card-text>{{message.body}}</v-card-text>
-                                <v-card-actions>{{dateConverting(message.time)}}</v-card-actions>
+                                <v-card-actions>{{timeConverter(message.time)}}</v-card-actions>
                             </v-card>
                         </v-flex>
                     </v-layout>
@@ -16,19 +16,40 @@
             </v-flex>
 
             <v-flex shrink>
-                <v-text-field
-                        v-model="plainTextMessage"
-                        height="65"
-                        append-icon="send"
-                        placeholder="you're message..."
-                        @keydown.enter="appendMessage"
-                        @keydown.esc="appendMessage"
-                        @click:append="appendMessage"
-                        solo dark flat clearable hide-details>
-                </v-text-field>
-                <v-btn icon flat @click="checkForMessage">
-                    <v-icon>refresh</v-icon>
-                </v-btn>
+                <v-layout column>
+                    <v-flex>
+
+                        <v-text-field
+                                v-model="plainTextMessage"
+                                height="65"
+                                append-icon="send"
+                                placeholder="you're message..."
+                                @keydown.enter="appendMessage"
+                                @keydown.esc="appendMessage"
+                                @click:append="appendMessage"
+                                solo dark flat clearable hide-details>
+                        </v-text-field>
+                    </v-flex>
+                    <v-flex>
+                        <span></span>
+                        <v-btn flat>
+                            Current User: {{id}}
+                        </v-btn>
+                        <v-btn flat @click="sentNewMessage">
+                            send messages
+                            <v-icon left>refresh</v-icon>
+                        </v-btn>
+                        <v-btn flat @click="ReceiveNewMessage">
+                            receive messages
+                            <v-icon left>refresh</v-icon>
+                        </v-btn>
+
+                        <v-btn flat>
+                            Delete Twitter messages
+                            <v-icon left>refresh</v-icon>
+                        </v-btn>
+                    </v-flex>
+                </v-layout>
             </v-flex>
         </v-layout>
     </v-container>
@@ -38,6 +59,7 @@
     import {MailBox}    from '../../module/MailBox'
     import {Message}    from '../../module/Message'
     import {TwitterAPI} from '../../module/twitter'
+    import {Reader}     from '../../module/reader'
 
     export default {
 
@@ -54,40 +76,7 @@
 
         created() {
             this.mailBox = new MailBox({ownerName: this.id})
-            this.mailBox.received_messages.push(new Message({
-                    to:   'A',
-                    from: 'B',
-                    body: 'bla bla bla',
-                }),
-                new Message({
-                        to:   'b',
-                        from: 'A',
-                        body: 'bla bla bla',
-                    },
-                ),
-                new Message({
-                    to:   'A',
-                    from: 'B',
-                    body: 'bla bla bla',
-                }),
-                new Message({
-                        to:   'b',
-                        from: 'A',
-                        body: 'bla bla bla',
-                    },
-                ),
-                new Message({
-                    to:   'A',
-                    from: 'B',
-                    body: 'bla bla bla',
-                }),
-                new Message({
-                        to:   'b',
-                        from: 'A',
-                        body: 'bla bla bla',
-                    },
-                ),
-            )
+            this.ReceiveNewMessage()
         },
 
         computed: {
@@ -104,20 +93,47 @@
                 this.plainTextMessage = ''
             },
 
-            checkForMessage() {
+            async ReceiveNewMessage(){
+                let reader   = new Reader()
+                let messages = await reader.get_messages()
+
+                messages.map(obj => {
+                    let {id, message} = obj
+                    let cur_message   = new Message()
+                    cur_message.from_JSON(message)
+                    return cur_message
+
+                }).filter((message) => {
+                    return message.to === this.id
+                }).forEach(message => {
+                    this.mailBox.received_messages.push(message)
+                })
+            },
+
+            sentNewMessage() {
                 console.log('check for new message...')
                 let twitter = TwitterAPI.get_client()
 
                 this.mailBox.messages_queue.forEach(async message => {
-                    let id = await twitter.post(message.body)
+                    let id = await twitter.post(message.to_JSON())
                     console.log('message id', id)
                 })
+                this.mailBox.sent_messages.concat(this.mailBox.messages_queue)
+                this.mailBox.messages_queue = []
             },
-            dateConverting(timestamp){
-                let datetime = require('node-datetime')
-                let dt = timestamp
-                return dt.format('m/d/Y H:m:S')
-            }
+
+            timeConverter(UNIX_timestamp) {
+                var a      = new Date(UNIX_timestamp * 1000)
+                var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                var year   = a.getFullYear()
+                var month  = months[a.getMonth()]
+                var date   = a.getDate()
+                var hour   = a.getHours()
+                var min    = a.getMinutes()
+                var sec    = a.getSeconds()
+                var time   = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec
+                return time
+            },
         },
     }
 </script>

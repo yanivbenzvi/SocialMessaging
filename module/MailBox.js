@@ -58,7 +58,7 @@ export class MailBox {
                     .concat(this.sent_messages)
                     .concat(this.messages_queue)
                     .sort((message1, message2) => {
-                        return message1.time < message2.time
+                        return message1.time > message2.time
                     })
     }
 }
