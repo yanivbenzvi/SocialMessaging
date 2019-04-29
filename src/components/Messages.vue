@@ -23,7 +23,7 @@
                                 v-model="plainTextMessage"
                                 height="65"
                                 append-icon="send"
-                                placeholder="you're message..."
+                                placeholder="your message..."
                                 @keydown.enter="appendMessage"
                                 @keydown.esc="appendMessage"
                                 @click:append="appendMessage"
