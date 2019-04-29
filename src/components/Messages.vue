@@ -4,9 +4,10 @@
 
             <v-flex class="scrollable pl-1 pr-4">
                 <template v-for="(message,index) in messages">
-                    <v-layout :class="message.from===id ? 'justify-start' : 'justify-end'">
+                    <v-layout :class="message.from===id ? 'justify-start' : 'justify-end '">
                         <v-flex xs3>
-                            <v-card class="my-2 mx-12" transition="scale-transition">
+                            <v-card :class="message.from===id ? 'my-2 mx-12': 'my-2 mx-12 blue-grey lighten-1'"
+                                    transition="scale-transition">
                                 <v-card-text>{{message.body}}</v-card-text>
                                 <v-card-actions>{{timeConverter(message.time)}}</v-card-actions>
                             </v-card>
