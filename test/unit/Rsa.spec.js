@@ -28,7 +28,7 @@ describe('Rsa', () => {
         })
     })
 
-    describe('#encrypt3dKey',()=>{
+    describe('#encrypt3dKey', () => {
         stub.externalPublicKey = mock.publicKey
     })
 
@@ -39,7 +39,14 @@ describe('Rsa', () => {
         })
     })
 
-    describe('#decrypt3dKey',()=>{
+    describe('#decrypt is not equal', () => {
+        it('decrypt data', () => {
+            const encrypted = stub.encrypt('hello world')
+            expect(stub.decrypt(encrypted)).to.be.not.equals('helloworld')
+        })
+    })
+
+    describe('#decrypt3dKey', () => {
     })
 
     describe('#importPublicKey', () => {
@@ -59,10 +66,29 @@ describe('Rsa', () => {
         })
     })
 
+    describe('MaxValues', () => {
+        it('Check Max Message', () => {
+            const strTest = "Hello World"
+            expect(stub.maxMessageSize() >= strTest.length).to.be.eql(true)
+        })
+        it('Check Max Public Key Message', () => {
+            expect(stub.maxKeySize() >= mock.publicKey.length).to.be.eql(true)
+        })
+
+        it('Check Max Private Key Message', () => {
+            expect(stub.maxKeySize() >= mock.privateKey.length).to.be.eql(true)
+        })
+
+        it ('size in byte', ()=>{
+            console.log("this length: " + stub.getByteLen("hello ♥ world"))
+        })
+
+    })
+
+
     describe('encrypt and decrypte message between 2 object', () => {
         let a = new Rsa()
         let b = new Rsa()
-
 
     })
 })
