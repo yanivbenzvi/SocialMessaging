@@ -21,11 +21,11 @@ export class MailBox {
      */
     sendMessage(to, textMessage) {
         let messageObject = {
-            to:          to,
-            from:        this.ownerName,
-            address:     this.ownerName,
-            timeStamp:   new Date(),
-            textMessage: textMessage,
+            to:        to,
+            from:      this.ownerName,
+            address:   this.ownerName,
+            timeStamp: new Date(),
+            body:      textMessage,
         }
 
         let message = new Message(messageObject)
@@ -58,7 +58,7 @@ export class MailBox {
                     .concat(this.sent_messages)
                     .concat(this.messages_queue)
                     .sort((message1, message2) => {
-                        return message1.timeStamp < message2.timeStamp
+                        return message1.time < message2.time
                     })
     }
 }

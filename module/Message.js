@@ -9,7 +9,7 @@ export class Message {
 
         this.to = to
         this.from = from
-        this.time = time
+        this.time = new Date().getTime()
         this.body = body
         this.readed = false
         this.mKey = md5(to + from + time)
