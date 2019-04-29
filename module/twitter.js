@@ -1,7 +1,6 @@
+import twitter from 'twitter'
 
-const Twitter = require('twitter');
-
-class TwitterAPI {
+export class TwitterAPI {
 
     // should be private
     static default_options() {
@@ -15,7 +14,7 @@ class TwitterAPI {
 
     constructor(options = TwitterAPI.default_options()) {
         this._options = options;
-        this.client = new Twitter(options)
+        this.client = new twitter(options)
     }
 
     async is_logged_in() {
@@ -103,5 +102,3 @@ class TwitterAPI {
         return TwitterAPI._instance;
     }
 }
-
-module.exports = { TwitterAPI }

@@ -28,7 +28,7 @@ describe('Reader', () => {
             }
             expect(get_messages_spy.called).to.be.false;
             reader.start(stop_after_10_message_read);
-            await sleep(100)
+            await sleep(500)
             expect(get_messages_spy.callCount).to.be.equal(10);
         });
     });

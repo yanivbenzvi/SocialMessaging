@@ -2,39 +2,39 @@
 //B will read all the time from user A
 
 // import {TwitterAPI} from "./twitter"
-const TwitterAPI = require('./twitter').TwitterAPI
+import {TwitterAPI} from '../module/twitter'
 
 function set_options(context, options) {
     for (let attr in options) {
-        context[attr] = options[attr];
+        context[attr] = options[attr]
     }
 }
 
-class Reader {
+export class Reader {
 
     constructor(options) {
-        set_options(this, options);
-        this._client = TwitterAPI.get_client();
+        set_options(this, options)
+        this._client = TwitterAPI.get_client()
         if (!this.wait_interval) {
-            this.wait_interval = 1000;
+            this.wait_interval = 1000
         }
         this._stop = false
-        this._loop = [];
+        this._loop = []
     }
 
     async get_messages() {
-        return await this._client.pull_all();
+        return await this._client.pull_all()
     }
 
     read(...args) {
-        start(...args);
+        start(...args)
     }
 
     start(message_handler) {
         this._stop = false
-        let loop = async () => {
-            let messages = await this.get_messages();
-            message_handler(messages);
+        let loop   = async () => {
+            let messages = await this.get_messages()
+            message_handler(messages)
             if (!this._stop) {
                 this._loop = setTimeout(loop, this.wait_interval)
             }
@@ -42,16 +42,11 @@ class Reader {
         loop()
     }
 
-
     stop() {
-        clearTimeout(this._loop);
+        clearTimeout(this._loop)
         this._stop = true
     }
-
 }
-
-
-module.exports = { Reader };
 
 // function test() {
 //     let x = new Reader({ wait_interval: 10 });
