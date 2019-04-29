@@ -1,7 +1,8 @@
 <template>
-    <v-container fluid class="pa-3 align-content-center">
-        <v-layout column class="" warp>
-            <v-flex wrap>
+    <v-container fluid class="pb-0 scrollable-hidden">
+        <v-layout column fill-height>
+            
+            <v-flex class="scrollable pl-1 pr-4">
                 <template v-for="(message,index) in messages">
                     <v-layout :class="message.from===id ? 'justify-start' : 'justify-end'">
                         <v-flex xs3>
@@ -13,7 +14,8 @@
                     </v-layout>
                 </template>
             </v-flex>
-            <v-flex>
+
+            <v-flex shrink>
                 <v-text-field
                         v-model="plainTextMessage"
                         height="65"
@@ -106,4 +108,7 @@
         overflow-y: scroll
     }
 
+    .scrollable-hidden {
+        overflow-y: hidden
+    }
 </style>
