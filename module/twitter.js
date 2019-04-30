@@ -68,13 +68,10 @@ export class TwitterAPI {
     }
 
     async pull_all() {
-        try {
+
             let json = await this.client.get("favorites/list", {});
             return json.map(el => { return { id: el.id_str, message: el.text } });
-        }
-        catch{
-            return [];
-        }
+
     }
     /**
      * async, destroys message using message id;

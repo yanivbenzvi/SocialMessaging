@@ -78,8 +78,11 @@
         },
 
         mounted() {
-            this.messageInterval = setInterval(this.sendAndReceive, 1000)
+            this.messageInterval = setInterval(this.sendAndReceive, 30000)
+        },
 
+        destroyed(){
+            clearInterval(this.messageInterval)
         },
 
         computed: {
