@@ -5,26 +5,19 @@ export class Message {
      * @param {Object} message
      */
     constructor(message = {}) {
-        const { to, from, time, body, twitterId} = message
-
-        this.to = to
-        this.from = from
-        this.time = new Date().getTime()
-        this.body = body
-        this.readed = false
-        this.mKey = md5(to + from + time)
-        this.twitterId = twitterId
+        this.from_object(message);
     }
 
     from_object(obj) {
-        const { to, from, time, body } = obj;
+        const { to, from, time, body, twitterId } = obj;
         this.to = to;
         this.from = from;
         this.time = time;
         this.body = body;
         this.readed = false;
         this.mKey = md5(to + from + body + time);
-        return true;
+        this.twitterId = twitterId;
+        return this;
     }
 
     to_object() {

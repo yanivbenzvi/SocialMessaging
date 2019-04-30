@@ -24,7 +24,7 @@ export class MailBox {
             to:        to,
             from:      this.ownerName,
             address:   this.ownerName,
-            timeStamp: new Date(),
+            time: new Date(),
             body:      textMessage,
         }
 

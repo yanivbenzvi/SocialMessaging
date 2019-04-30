@@ -1,5 +1,5 @@
-import { TwitterAPI } from '../../module/twitter'
-import { Reader } from '../../module/reader'
+import { Sync } from '../../module/Sync'
+import { MailBox} from '../../module/MailBox'
 
 const chai = require('chai');
 const expect = chai.expect;
@@ -10,25 +10,27 @@ async function sleep(time) {
     return new Promise((resolve, reject) => { setTimeout(() => { resolve() }, time) })
 }
 
-describe('Reader', () => {
+describe.only('Sync', () => {
     describe('#read_always', () => {
         it("should stop reading after 10 reads", async () => {
-            let reader = new Reader({ wait_interval: 1 });
-            let get_messages_spy = sinon.stub(reader, "get_messages").callsFake(async () => {
-                return await new Promise((resolve, reject) => {
-                    setTimeout(() => { resolve([]) }, 0)
-                })
-            });
+            let sync = new Sync(new MailBox(),{ wait_interval: 1 });
+
             var counter = 10
-            let stop_after_10_message_read = (m) => {
+            let stop_after_10_message_read = () => {
                 counter--;
                 if (counter == 0) {
-                    reader.stop()
+                    sync.stop();
                 }
             }
+
+            let get_messages_spy = sinon.stub(sync, "refresh").callsFake(async () => {
+                await sleep(0);
+                stop_after_10_message_read();
+            });
+
             expect(get_messages_spy.called).to.be.false;
-            reader.start(stop_after_10_message_read);
-            await sleep(500)
+            sync.start();
+            await sleep(500);
             expect(get_messages_spy.callCount).to.be.equal(10);
         });
     });

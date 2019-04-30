@@ -6,7 +6,7 @@ describe('Message', () => {
     it('has the follow attribute', () => {
         const message      = new Message()
         const stub = Object.keys(message)
-        const attribute = ['to', 'from', 'time', 'body', 'readed', 'mKey']
+        const attribute = ['to', 'from', 'time', 'body', 'readed', 'mKey', 'twitterId']
 
         expect(stub).to.be.eql(attribute)
     })
@@ -20,8 +20,8 @@ describe('Message', () => {
         };
         let res = message.from_object(input);
         describe('#from_object', () => {
-            it("should say succeded in operation", () => {
-                expect(res).to.be.equal(true);
+            it("should be valid message", () => {
+                expect(message.is_valid()).to.be.equal(true);
             });
         });
         describe("#to_object", () => {
@@ -41,8 +41,8 @@ describe('Message', () => {
         }`;
         let res = message.from_JSON(input);
         describe('#from_JSON', () => {
-            it("should say succeded in operation", () => {
-                expect(res).to.be.equal(true);
+            it("should be valid message", () => {
+                expect(message.is_valid()).to.be.equal(true);
             });
         });
         describe("#to_JSON", () => {
@@ -59,8 +59,8 @@ describe('Message', () => {
         let input = ["b","a","00:00:00","this is a message"].join(terminal);        
         let res = message.from_string(input);
         describe('#from_string', () => {
-            it("should say succeded in operation", () => {
-                expect(res).to.be.equal(true);
+            it("should be valid message", () => {
+                expect(message.is_valid()).to.be.equal(true);
             });
         });
         describe("#to_string", () => {

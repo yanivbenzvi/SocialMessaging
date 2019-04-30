@@ -3,13 +3,13 @@
         <v-layout column fill-height>
 
             <v-flex class="scrollable pl-1 pr-4">
-                <template v-for="(message,index) in messages">
+                <template v-for="message in messages">
                     <v-layout :class="message.from===id ? 'justify-start' : 'justify-end '" :key="message.mKey">
                         <v-flex xs3>
                             <v-card :class="message.from===id ? 'my-2 mx-12': 'my-2 mx-12 blue-grey lighten-1'"
                                     transition="scale-transition">
                                 <v-card-text>{{message.body}}</v-card-text>
-                                <v-card-actions>{{timeConverter(message.time)}}</v-card-actions>
+                                <v-card-actions>{{Utils.timeConverter(message.time)}}</v-card-actions>
                             </v-card>
                         </v-flex>
                     </v-layout>
@@ -36,12 +36,12 @@
                         <v-btn flat>
                             Current User: {{id}}
                         </v-btn>
-                        <v-btn flat @click="sentNewMessage">
-                            send messages
+                        <v-btn flat @click="sync.start()">
+                            start sync
                             <v-icon left>refresh</v-icon>
                         </v-btn>
-                        <v-btn flat @click="receiveNewMessage">
-                            receive messages
+                        <v-btn flat @click="sync.stop()">
+                            stop sync
                             <v-icon left>refresh</v-icon>
                         </v-btn>
 
@@ -54,10 +54,8 @@
 
 <script>
     import {MailBox}    from '../../module/MailBox'
-    import {Message}    from '../../module/Message'
-    import {TwitterAPI} from '../../module/twitter'
-    import {Reader}     from '../../module/reader'
-
+    import {Sync}     from '../../module/Sync'
+    import {Utils} from '../../module/utils/Utils'
     export default {
 
         props: ['id'],
@@ -67,86 +65,34 @@
         data() {
             return {
                 plainTextMessage: '',
-                mailBox:          null,
-                messageInterval:  null,
+                Utils,
             }
         },
 
         created() {
-            this.mailBox = new MailBox({ownerName: this.id})
-            this.receiveNewMessage()
+            this.mailBox = new MailBox({ownerName: this.id});
+            this.sync = new Sync(this.mailBox,{wait_interval:10000}); //10 sec
+            // this.sync.receiveNewMessage();
         },
 
         mounted() {
-            this.messageInterval = setInterval(this.sendAndReceive, 30000)
+            this.sync.start()
         },
 
         destroyed(){
-            clearInterval(this.messageInterval)
+            this.sync.stop();
         },
 
         computed: {
             messages() {
-                return this.mailBox.getAllMessages()
+                return this.mailBox.getAllMessages();
             },
-
         },
 
         methods: {
             appendMessage() {
-                let receive = ''
-                this.mailBox.sendMessage(this.id === 'A' ? 'B' : 'A', this.plainTextMessage)
-                this.plainTextMessage = ''
-            },
-
-            sendAndReceive() {
-                this.receiveNewMessage()
-                this.sentNewMessage()
-            },
-
-            async receiveNewMessage() {
-                let twitter = TwitterAPI.get_client()
-                let messages = await twitter.pull_all()
-
-                console.log(messages)
-
-                messages.map(obj => {
-                    let {id, message} = obj
-                    let cur_message   = new Message()
-                    cur_message.from_JSON(message)
-                    cur_message.twitterId = id
-                    return cur_message
-
-                }).filter((message) => {
-                    return message.to === this.id
-                }).forEach(async message => {
-                    this.mailBox.received_messages.push(message)
-                    await twitter.destroy(message.twitterId)
-                })
-            },
-
-            sentNewMessage() {
-                let twitter = TwitterAPI.get_client()
-
-                this.mailBox.messages_queue.forEach(async message => {
-                    let id = await twitter.post(message.to_JSON())
-                    console.log('sending new message: ',id)
-                })
-                this.mailBox.sent_messages  = this.mailBox.sent_messages.concat(this.mailBox.messages_queue)
-                this.mailBox.messages_queue = []
-            },
-
-            timeConverter(UNIX_timestamp) {
-                var a      = new Date(UNIX_timestamp)
-                var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                var year   = a.getFullYear()
-                var month  = months[a.getMonth()]
-                var date   = a.getDate()
-                var hour   = a.getHours()
-                var min    = a.getMinutes()
-                var sec    = a.getSeconds()
-                var time   = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec
-                return time
+                this.mailBox.sendMessage(this.id === 'A' ? 'B' : 'A', this.plainTextMessage);
+                this.plainTextMessage = '';
             },
         },
     }

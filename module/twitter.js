@@ -19,7 +19,7 @@ export class TwitterAPI {
 
     async is_logged_in() {
         try {
-            let res = await this.client.get('statuses/show/a', {})
+            await this.client.get('statuses/show/a', {})
         }
         catch (err) {
             try {
@@ -39,14 +39,9 @@ export class TwitterAPI {
      * @returns {PromiseLike<string>} 
      */
     async post(message, is_fav = true) {
-        try {
-            let json = await this.client.post('statuses/update', { status: message });
-            if (is_fav) await this.client.post('favorites/create/', { id: json.id_str });
-            return json.id_str;
-        }
-        catch {
-            return null;
-        }
+        let json = await this.client.post('statuses/update', { status: message });
+        if (is_fav) await this.client.post('favorites/create/', { id: json.id_str });
+        return json.id_str;
     }
 
     /**
@@ -57,21 +52,14 @@ export class TwitterAPI {
      * @returns {PromiseLike<string>} 
      */
     async pull(id) {
-        try {
-            let stat = 'statuses/show/' + id;
-            let json = await this.client.get(stat, {});
-            return json.text;
-        }
-        catch{
-            return null;
-        }
+        let stat = 'statuses/show/' + id;
+        let json = await this.client.get(stat, {});
+        return json.text;
     }
 
     async pull_all() {
-
-            let json = await this.client.get("favorites/list", {});
-            return json.map(el => { return { id: el.id_str, message: el.text } });
-
+        let json = await this.client.get("favorites/list", {});
+        return json.map(el => { return { id: el.id_str, text: el.text } });
     }
     /**
      * async, destroys message using message id;
@@ -81,14 +69,8 @@ export class TwitterAPI {
      * @returns {PromiseLike<boolean>} 
      */
     async destroy(id) {
-        try {
-            let stat = 'statuses/destroy/' + id;
-            let json = await this.client.post(stat, {});
-            return true;
-        }
-        catch (err) {
-            return false;
-        }
+        let stat = 'statuses/destroy/' + id;
+        return await this.client.post(stat, {});
     }
 
     static get_client(options) {

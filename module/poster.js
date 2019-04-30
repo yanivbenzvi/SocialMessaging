@@ -2,7 +2,7 @@
 //B will read all the time from user A
 
 // import {TwitterAPI} from "./twitter"
-import {TwitterAPI} from '../module/twitter'
+import {TwitterAPI} from './Twitter'
 
 async function ask_for_input() {
     let twitt = new TwitterAPI()

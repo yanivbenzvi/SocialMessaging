@@ -1,4 +1,6 @@
 import { TwitterAPI } from '../../module/twitter'
+import { resolve } from 'path';
+import { reject } from 'q';
 
 const chai = require('chai');
 const expect = chai.expect;
@@ -31,26 +33,21 @@ describe("TwitterAPI", () => {
             let message = "asdafasfsa"
             let id = await twitter.post(message);
             let pulled_message = await twitter.pull(id);
-            let destroyed = await twitter.destroy(id)
-         
-
+            expect(await twitter.destroy(id)).to.not.throw;
             expect(pulled_message).to.be.equal(message);
-            expect(destroyed).to.be.equal(true);
         })
 
-        it("should not be able to delete random message", async ()=>{
+        it("should not be able to delete random message", (done) => {
             let twitter = TwitterAPI.get_client();
-            let destroyed = await twitter.destroy("1120260090194477057");
-            expect(destroyed).to.be.equal(false);
+            twitter.destroy("1120260090194477057").catch(()=>{done()});
         })
     })
 
-    describe("#get_client",()=>{
-        it("should return the same client when used multipule times", ()=>{
+    describe("#get_client", () => {
+        it("should return the same client when used multipule times", () => {
             let first_twitter_client = TwitterAPI.get_client();
             let second_twitter_client = TwitterAPI.get_client();
-
             expect(first_twitter_client).to.deep.equal(second_twitter_client);
         })
-    })
+    });
 })
