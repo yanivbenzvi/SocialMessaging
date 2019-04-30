@@ -65,6 +65,8 @@
         data() {
             return {
                 plainTextMessage: '',
+                mailBox: null,
+                sync: null,
                 Utils,
             }
         },
