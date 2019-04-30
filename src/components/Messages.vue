@@ -4,7 +4,7 @@
 
             <v-flex class="scrollable pl-1 pr-4">
                 <template v-for="(message,index) in messages">
-                    <v-layout :class="message.from===id ? 'justify-start' : 'justify-end '">
+                    <v-layout :class="message.from===id ? 'justify-start' : 'justify-end '" :key="message.mKey">
                         <v-flex xs3>
                             <v-card :class="message.from===id ? 'my-2 mx-12': 'my-2 mx-12 blue-grey lighten-1'"
                                     transition="scale-transition">
@@ -103,10 +103,9 @@
 
             async receiveNewMessage() {
                 let twitter = TwitterAPI.get_client()
-
-                let reader = new Reader()
-
                 let messages = await twitter.pull_all()
+
+                console.log(messages)
 
                 messages.map(obj => {
                     let {id, message} = obj
