@@ -40,7 +40,7 @@
                             send messages
                             <v-icon left>refresh</v-icon>
                         </v-btn>
-                        <v-btn flat @click="ReceiveNewMessage">
+                        <v-btn flat @click="receiveNewMessage">
                             receive messages
                             <v-icon left>refresh</v-icon>
                         </v-btn>
@@ -68,12 +68,18 @@
             return {
                 plainTextMessage: '',
                 mailBox:          null,
+                messageInterval:  null,
             }
         },
 
         created() {
             this.mailBox = new MailBox({ownerName: this.id})
-            this.ReceiveNewMessage()
+            this.receiveNewMessage()
+        },
+
+        mounted() {
+            this.messageInterval = setInterval(this.sendAndReceive, 1000)
+
         },
 
         computed: {
@@ -85,14 +91,20 @@
 
         methods: {
             appendMessage() {
+                let receive = ''
                 this.mailBox.sendMessage(this.id === 'A' ? 'B' : 'A', this.plainTextMessage)
                 this.plainTextMessage = ''
             },
 
-            async ReceiveNewMessage(){
-                let twitter = TwitterAPI.get_client();
+            sendAndReceive() {
+                this.receiveNewMessage()
+                this.sentNewMessage()
+            },
 
-                let reader   = new Reader()
+            async receiveNewMessage() {
+                let twitter = TwitterAPI.get_client()
+
+                let reader = new Reader()
 
                 let messages = await twitter.pull_all()
 
@@ -112,13 +124,13 @@
             },
 
             sentNewMessage() {
-                console.log('check for new message...')
                 let twitter = TwitterAPI.get_client()
 
                 this.mailBox.messages_queue.forEach(async message => {
                     let id = await twitter.post(message.to_JSON())
+                    console.log('sending new message: ',id)
                 })
-                this.mailBox.sent_messages = this.mailBox.sent_messages.concat(this.mailBox.messages_queue)
+                this.mailBox.sent_messages  = this.mailBox.sent_messages.concat(this.mailBox.messages_queue)
                 this.mailBox.messages_queue = []
             },
 
