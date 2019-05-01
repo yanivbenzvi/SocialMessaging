@@ -9,7 +9,7 @@
                             <v-card :class="message.from===id ? 'my-2 mx-12': 'my-2 mx-12 blue-grey lighten-1'"
                                     transition="scale-transition">
                                 <v-card-text>{{message.body}}</v-card-text>
-                                <v-card-actions>{{Utils.timeConverter(message.time)}}</v-card-actions>
+                                <v-card-actions>{{timeConverter(message.time)}}</v-card-actions>
                             </v-card>
                         </v-flex>
                     </v-layout>
@@ -53,9 +53,9 @@
 </template>
 
 <script>
-    import {MailBox}    from '../../module/MailBox'
-    import {Sync}     from '../../module/Sync'
-    import {Utils} from '../../module/utils/Utils'
+    import { MailBox }    from '../../module/MailBox'
+    import { Sync }     from '../../module/Sync'
+    import { timeConverter } from '../../module/utils/Utils'
     export default {
 
         props: ['id'],
@@ -67,7 +67,6 @@
                 plainTextMessage: '',
                 mailBox: null,
                 sync: null,
-                Utils,
             }
         },
 
@@ -96,6 +95,7 @@
                 this.mailBox.sendMessage(this.id === 'A' ? 'B' : 'A', this.plainTextMessage);
                 this.plainTextMessage = '';
             },
+            timeConverter,
         },
     }
 </script>
