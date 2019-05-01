@@ -12,7 +12,6 @@ export class MailBox {
         this.received_messages   = []
         this.sent_messages       = []
         this.messages_queue      = []
-        this.newMessagesArrIndex = []
     }
 
     /**
@@ -23,7 +22,7 @@ export class MailBox {
         let messageObject = {
             to:        to,
             from:      this.ownerName,
-            address:   this.ownerName,
+            status: Message.StatusCodes.message,
             time: new Date(),
             body:      textMessage,
         }
@@ -31,7 +30,7 @@ export class MailBox {
         let message = new Message(messageObject)
         this.messages_queue.push(message)
     }
-
+ 
     /**
      * This function will check if there are new messages.
      * @returns {Number}
