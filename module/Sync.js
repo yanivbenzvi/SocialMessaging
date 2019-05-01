@@ -16,6 +16,7 @@ export class Sync {
         }
         this.twitter = TwitterAPI.get_client();
         this.mailBox = mailBox;
+        this.contacts = {};
         this._stop = false;
         this._loop;
     }
@@ -53,6 +54,7 @@ export class Sync {
             let cur_message   = new Message();
             cur_message.from_JSON(text);
             cur_message.twitterId = id;
+            console.log(cur_message);
             return cur_message;
         }).filter((message) => {
             return message.to === this.mailBox.ownerName;
@@ -69,6 +71,15 @@ export class Sync {
         })
         this.mailBox.sent_messages  = this.mailBox.sent_messages.concat(this.mailBox.messages_queue);
         this.mailBox.messages_queue = [];
+    }
+
+    sendContactInfo(to){
+        let key_message = new Message({
+            to: to,
+            from: this.mailBox.ownerName,
+            time: new Date(),
+            body: this.mailBox.own_key(),
+        });
     }
 }
 

@@ -1,21 +1,21 @@
-import {Message} from '../../module/Message'
+import { MessageData } from '../../module/MessageData'
 
 const expect = require('chai').expect
 
-describe('Message', () => {
+describe('MessageData', () => {
     it('has the follow attribute', () => {
-        const message      = new Message()
-        const stub = Object.keys(message)
-        const attribute = ['to', 'from', 'time', 'body', 'readed', 'mKey', 'twitterId']
+        const message = new MessageData();
+        const stub = Object.keys(message);
+        const attribute = ['to', 'from', 'status', 'time', 'body'];
 
         expect(stub).to.be.eql(attribute)
     })
     describe('#Object', () => {
-        let message = new Message();
+        let message = new MessageData();
         let input = {
             to: "b",
-            from : "a",
-            time : "00:00:00",
+            from: "a",
+            time: "00:00:00",
             body: "this is a message",
         };
         let res = message.from_object(input);
@@ -32,7 +32,7 @@ describe('Message', () => {
         })
     });
     describe('#JSON', () => {
-        let message = new Message();
+        let message = new MessageData();
         let input = `{
             "to": "b",
             "from" : "a",
@@ -54,9 +54,9 @@ describe('Message', () => {
     });
 
     describe('#String', () => {
-        let message = new Message();
-        let terminal = Message._terminal();
-        let input = ["b","a","00:00:00","this is a message"].join(terminal);        
+        let message = new MessageData();
+        let terminal = MessageData._terminal();
+        let input = ["b", "a", "00:00:00", "this is a message"].join(terminal);
         let res = message.from_string(input);
         describe('#from_string', () => {
             it("should be valid message", () => {

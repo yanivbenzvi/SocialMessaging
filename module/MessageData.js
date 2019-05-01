@@ -1,3 +1,10 @@
+import { Enum } from './utils/Utils';
+
+const status_codes = Enum({
+    "message": 0,
+    "key": 1,
+});
+
 export class MessageData {
     /**
      * Message constructor.
@@ -5,6 +12,10 @@ export class MessageData {
      */
     constructor(message = {}) {
         this.from_object(message);
+    }
+
+    static get StatusCodes(){
+        return status_codes;
     }
 
     from_object(obj) {
@@ -45,8 +56,8 @@ export class MessageData {
     }
 
     from_string(str) {
-        let keys = Message._attributes_order();
-        let values = str.split(Message._terminal());
+        let keys = MessageData._attributes_order();
+        let values = str.split(MessageData._terminal());
         let message = {}
         if (keys.length != values.length)
             return false;
