@@ -1,77 +1,13 @@
-import md5 from 'md5'
-export class Message {
-    /**
-     * Message constructor.
-     * @param {Object} message
-     */
-    constructor(message = {}) {
-        this.from_object(message);
-    }
+import { MessageData } from './MessageData';
+import md5 from 'md5';
 
-    from_object(obj) {
-        const { to, from, time, body, twitterId } = obj;
-        this.to = to;
-        this.from = from;
-        this.time = time;
-        this.body = body;
-        this.readed = false;
-        this.mKey = md5(to + from + body + time);
+export class Message extends MessageData {
+
+    constructor(messageObject) {
+        super(messageObject);
+        let { twitterId } = messageObject;
         this.twitterId = twitterId;
-        return this;
-    }
-
-    to_object() {
-        return {
-            'to': this.to,
-            'from': this.from,
-            'time': this.time,
-            'body': this.body,
-        };
-    }
-
-    from_JSON(message) {
-        message = JSON.parse(message);
-        return this.from_object(message);
-    }
-
-    to_JSON() {
-        return JSON.stringify(this.to_object());
-    }
-
-    static _attributes_order() {
-        return ['to', 'from', 'time', 'body']
-    }
-
-    static _terminal() {
-        return "/~?"
-    }
-
-    from_string(str) {
-        let keys = Message._attributes_order();
-        let values = str.split(Message._terminal());
-        let message = {}
-        if (keys.length != values.length)
-            return false;
-        for (let i = 0; i < keys.length; i++) {
-            message[keys[i]] = values[i];
-        }
-        return this.from_object(message);
-    }
-
-    is_valid() {
-        for (let attr of Message._attributes_order()) {
-            if (!(attr in this))
-                return false;
-        }
-        return true;
-    }
-
-    to_string() {
-        if (!this.is_valid()) return null;
-        let str_arr = []
-        for (let attr of Message._attributes_order()) {
-            str_arr.push(this[attr])
-        }
-        return str_arr.join(Message._terminal());
+        this.readed = false;
+        this.mKey = new md5(this.to + this.from + this.time);
     }
 }
