@@ -3,6 +3,7 @@ import { MessageData } from '../../module/MessageData'
 const expect = require('chai').expect
 
 describe('MessageData', () => {
+    let normal_code = MessageData.StatusCodes.status;
     it('has the follow attribute', () => {
         const message = new MessageData();
         const stub = Object.keys(message);
@@ -15,6 +16,7 @@ describe('MessageData', () => {
         let input = {
             to: "b",
             from: "a",
+            status: normal_code,
             time: "00:00:00",
             body: "this is a message",
         };
@@ -25,7 +27,7 @@ describe('MessageData', () => {
             });
         });
         describe("#to_object", () => {
-            it("message.to_JSON() should mean the same as the input JSON", () => {
+            it("message.to_object() should mean the same as the input object", () => {
                 let object_export = message.to_object();
                 expect(object_export).to.be.deep.equal(input);
             })
@@ -36,6 +38,7 @@ describe('MessageData', () => {
         let input = `{
             "to": "b",
             "from" : "a",
+            "status": "${normal_code}",
             "time" : "00:00:00",
             "body": "this is a message"
         }`;
@@ -56,7 +59,7 @@ describe('MessageData', () => {
     describe('#String', () => {
         let message = new MessageData();
         let terminal = MessageData._terminal();
-        let input = ["b", "a", "00:00:00", "this is a message"].join(terminal);
+        let input = ["b", "a", normal_code, "00:00:00", "this is a message"].join(terminal);
         let res = message.from_string(input);
         describe('#from_string', () => {
             it("should be valid message", () => {

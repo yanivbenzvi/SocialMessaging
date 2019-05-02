@@ -1,58 +1,60 @@
 //This is user B.
 //B will read all the time from user A
 
-// import {TwitterAPI} from "./twitter"
-import {TwitterAPI} from './Twitter'
-import {Message} from './Message'
-
+import { TwitterAPI } from './Twitter'
+import { Message } from './Message'
+import { IntervalLoop } from './IntervalLoop';
+import { eventify, eventify_clear, array_remove } from './utils/Utils';
 export class Sync {
 
     constructor(mailBox, options) {
-        for (let attr in options) {
-            this[attr] = options[attr]
-        }
-        if (!this.wait_interval) {
-            this.wait_interval = 1000; //1 sec
-        }
         this.twitter = TwitterAPI.get_client();
         this.mailBox = mailBox;
-        this._stop = false;
-        this._loop;
-    }
 
-    async refresh(){
-        await this.sendAndReceive();
+        let { wait_interval } = options;
+        if (typeof wait_interval === 'undefined') { wait_interval = 1000 }
+        this._refresh = async () => { 
+            this.receiveNewMessages();
+            this.retryFailedMessages 
+        };
+        this.loop = new IntervalLoop({
+            loop_function: this._refresh,
+            wait_interval: wait_interval
+        })
     }
 
     start() {
-        this._stop = false;
-        let loop   = async () => {
-            await this.refresh();
-            if (!this._stop) {
-                this._loop = setTimeout(loop, this.wait_interval);
-            }
-        }
-        loop();
+        this.clear_sending();
+        this.init_sending()
+        this.loop.start();
     }
 
     stop() {
-        clearTimeout(this._loop);
-        this._stop = true;
+        this.loop.stop();
+        this.clear_sending();
     }
 
-    async sendAndReceive() {
-        await this.receiveNewMessage();
-        await this.sendNewMessage();
+    init_sending() {
+        eventify(this.mailBox.messages_queue, "push", (message) => {
+            console.log("executing instant event");
+            this.sendNewMessage(message);
+        })
+        console.log("created events in queue : ", this.mailBox.messages_queue);
+
     }
 
-    async receiveNewMessage() {
+    clear_sending() {
+        eventify_clear(this.mailBox.messages_queue)
+    }
+
+    async receiveNewMessages() {
         let messages = await this.twitter.pull_all();
         console.log(messages);
         messages.map(obj => {
-            let {id, text} = obj;
-            let cur_message   = new Message();
+            let { id, text } = obj;
+            let cur_message = new Message();
             cur_message.from_JSON(text);
-            cur_message.twitterId = id;
+            cur_message.addAttributes({ twitterId: id })
             return cur_message;
         }).filter((message) => {
             return message.to === this.mailBox.ownerName;
@@ -62,34 +64,20 @@ export class Sync {
         })
     }
 
-    sendNewMessage() {
-        this.mailBox.messages_queue.forEach(async message => {
+    async sendNewMessage(message) {
+        try {
             let id = await this.twitter.post(message.to_JSON());
-            console.log('sent a new message: ',id);
-        })
-        this.mailBox.sent_messages  = this.mailBox.sent_messages.concat(this.mailBox.messages_queue);
-        this.mailBox.messages_queue = [];
+            message.addAttributes({ twitterId: id });
+            console.log('sent a new message: ', message);
+            array_remove(this.mailBox.messages_queue, message);
+            this.mailBox.sent_messages.push(message);
+        }
+        catch (err) {
+            console.log("failed sending, will do again later", err);
+        }
+    }
+    
+    async retryFailedMessages() {
+        this.messages_queue.forEach(this.sendNewMessage);
     }
 }
-
-// function test() {
-//     let x = new Reader({ wait_interval: 10 });
-
-//     var counter = 10
-//     let stop_after_10_message_read = (m) => {
-//         console.log(counter);
-
-//         counter--;
-//         if (counter == 0) {
-//             console.log("stopping");
-//             x.stop()
-//         }
-//     }
-//     x.start(stop_after_10_message_read);
-//     setTimeout(() => {
-//         x.stop(); console.log("stopped")
-//         setTimeout(() => {
-//             console.log("done")
-//         }, 3000)
-//     }, 7000)
-// }

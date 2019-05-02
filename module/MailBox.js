@@ -1,4 +1,4 @@
-import {Message} from './Message'
+import { Message } from './Message'
 
 /**this is the main mail box class*/
 export class MailBox {
@@ -30,7 +30,7 @@ export class MailBox {
         let message = new Message(messageObject)
         this.messages_queue.push(message)
     }
- 
+   
     /**
      * This function will check if there are new messages.
      * @returns {Number}

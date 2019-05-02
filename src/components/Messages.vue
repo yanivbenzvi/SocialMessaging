@@ -72,8 +72,7 @@
 
         created() {
             this.mailBox = new MailBox({ownerName: this.id});
-            this.sync = new Sync(this.mailBox,{wait_interval:10000}); //10 sec
-            // this.sync.receiveNewMessage();
+            this.sync = new Sync(this.mailBox,{wait_interval:30000}); //30 sec
         },
 
         mounted() {

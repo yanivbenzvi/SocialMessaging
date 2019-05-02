@@ -68,7 +68,7 @@ export class MessageData {
     }
 
     is_valid() {
-        for (let attr of Message._attributes_order()) {
+        for (let attr of MessageData._attributes_order()) {
             if (!(attr in this))
                 return false;
         }

@@ -10,4 +10,10 @@ export class Message extends MessageData {
         this.readed = false;
         this.mKey = md5(this.to + this.from + this.time);
     }
+
+    addAttributes(attrs){
+        for(let attr in attrs){
+            this[attr] = attrs[attr];
+        }
+    }
 }
