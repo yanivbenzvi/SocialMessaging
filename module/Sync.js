@@ -15,7 +15,7 @@ export class Sync {
         if (typeof wait_interval === 'undefined') { wait_interval = 1000 }
         this._refresh = async () => { 
             this.receiveNewMessages();
-            this.retryFailedMessages 
+            this.retryFailedMessages();
         };
         this.loop = new IntervalLoop({
             loop_function: this._refresh,
@@ -78,6 +78,8 @@ export class Sync {
     }
     
     async retryFailedMessages() {
-        this.messages_queue.forEach(this.sendNewMessage);
+        for (let message of this.mailBox.messages_queue){
+            await this.sendNewMessage(message);
+        }
     }
 }
