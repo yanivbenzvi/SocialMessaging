@@ -9,10 +9,11 @@ export class MessageData {
 
     static get StatusCodes() {
         return {
-            message:   0,
-            post_key:  1,
-            get_Key:   2,
-            handShake: 3,
+            message:           0,
+            post_key:          1,
+            ask_for_key:       2,
+            post_handshake:    3,
+            ask_for_handshake: 4,
         }
     }
 

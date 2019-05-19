@@ -1,4 +1,4 @@
-import { Message } from './Message'
+import {Message} from './Message'
 
 /**this is the main mail box class*/
 export class MailBox {
@@ -8,10 +8,10 @@ export class MailBox {
      * @param MailAddress
      */
     constructor(mailBoxObj = {}) {
-        this.ownerName           = mailBoxObj.ownerName
-        this.received_messages   = []
-        this.sent_messages       = []
-        this.messages_queue      = []
+        this.ownerName         = mailBoxObj.ownerName
+        this.received_messages = []
+        this.sent_messages     = []
+        this.messages_queue    = []
     }
 
     /**
@@ -20,17 +20,21 @@ export class MailBox {
      */
     sendMessage(to, textMessage) {
         let messageObject = {
-            to:        to,
-            from:      this.ownerName,
+            to:     to,
+            from:   this.ownerName,
             status: Message.StatusCodes.message,
-            time: new Date(),
-            body:      textMessage,
+            time:   new Date(),
+            body:   textMessage,
         }
 
         let message = new Message(messageObject)
-        this.messages_queue.push(message)
+        this.sendMessageObject(message)
     }
-   
+
+    sendMessageObject(messageObject) {
+        this.messages_queue.push(messageObject)
+    }
+
     /**
      * This function will check if there are new messages.
      * @returns {Number}
@@ -59,5 +63,6 @@ export class MailBox {
                     .sort((message1, message2) => {
                         return message1.time > message2.time
                     })
+                    .filter(message => message.status === Message.StatusCodes.message)
     }
 }

@@ -45,7 +45,10 @@
                             stop sync
                             <v-icon left>refresh</v-icon>
                         </v-btn>
-
+                        <v-btn flat @click="sync.clearTwitter()">
+                            Clean Twitter
+                            <v-icon left>refresh</v-icon>
+                        </v-btn>
                     </v-flex>
                 </v-layout>
             </v-flex>
