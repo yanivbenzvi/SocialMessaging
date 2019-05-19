@@ -71,7 +71,7 @@
             return {
                 plainTextMessage: '',
                 mailBox:          null,
-                sync:             null,
+                Msync:             null,
             }
         },
 

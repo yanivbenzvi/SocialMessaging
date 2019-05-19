@@ -60,9 +60,9 @@ export class MailBox {
         return Array.from(this.received_messages)
                     .concat(this.sent_messages)
                     .concat(this.messages_queue)
+                    .filter(message => message.status === Message.StatusCodes.message)
                     .sort((message1, message2) => {
                         return message1.time > message2.time
                     })
-                    .filter(message => message.status === Message.StatusCodes.message)
     }
 }

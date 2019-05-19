@@ -44,10 +44,12 @@ export class ManageState {
                 //check if we success to decode message and get agreed message (something like test word)
                 //if we not succeed to decode handshake message state will changed to has_no_key
                 //else change state to {ready_to_start_communication}
-                if (this.verifyHandshake(messages)) {
-                    this.currentState = ManageState.states.ready_to_start_communication
-                } else {
-                    this.currentState = ManageState.states.ask_for_key
+                if (this.getMessagesByStatusCode(messages, Message.StatusCodes.post_handshake).length > 0) {
+                    if (this.verifyHandshake(messages)) {
+                        this.currentState = ManageState.states.ready_to_start_communication
+                    } else {
+                        this.currentState = ManageState.states.ask_for_key
+                    }
                 }
                 break
             case ManageState.states.ask_for_key:
@@ -93,7 +95,7 @@ export class ManageState {
         if (handshakes.length === 0) {
             return false
         }
-        console.log('recived handshake succesfully')
+        console.log('received handshake successfully')
         return true // should check if handshake actually succeded
     }
 
