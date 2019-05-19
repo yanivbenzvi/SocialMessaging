@@ -22,14 +22,17 @@ export class ManageState {
         }
     }
 
-    async handleState() {
-        console.log('current state:', Object.keys(ManageState.states)[this.currentState], this.currentState)
-        const to       = this.mailBox.ownerName === 'A' ? 'B' : 'A'
+    async handle() {
         //receive all message from twitter
         const messages = await this.getAllTwitterMessage()
-        this.handleIncomingMessages(messages)
         //filter message and look for status code {ask_for_handshake} and send handshake
+        this.handleIncomingMessages(messages)
+        this.handleState(messages)        
+    }
 
+    handleState(messages){
+        const to       = this.mailBox.ownerName === 'A' ? 'B' : 'A'
+        console.log('current state:', Object.keys(ManageState.states)[this.currentState], this.currentState)
         switch (this.currentState) {
             case ManageState.states.initial_state:
                 this.currentState = ManageState.states.ask_for_handshake
@@ -49,17 +52,25 @@ export class ManageState {
                         this.currentState = ManageState.states.ready_to_start_communication
                     } else {
                         this.currentState = ManageState.states.ask_for_key
+                        // rehandle ////////////////////////////////////////////////////////////////////////////////
+                        this.handleState(messages)
                     }
                 }
                 break
             case ManageState.states.ask_for_key:
                 //send message with code {ask_for_key}
+                this.sendMessageObject(this.messageFactory.ask_for_key(to))
                 this.currentState = ManageState.states.waiting_for_key
                 break
             case ManageState.states.waiting_for_key:
                 //filter message and look for message with status code {ask_for_key}
                 //if we get new key go back to back to {ask_for_handshake}
-                this.currentState = ManageState.states.ask_for_handshake
+                if (this.getMessagesByStatusCode(messages, Message.StatusCodes.post_key).length > 0) {
+                    updateContacts(messages)
+                    this.currentState = ManageState.states.ask_for_handshake
+                    // rehandle ////////////////////////////////////////////////////////////////////////////////
+                    this.handleState(messages)
+                }
                 break
             case ManageState.states.ready_to_start_communication:
                 // receive and send message queue !!!!!!!
@@ -91,15 +102,23 @@ export class ManageState {
     }
 
     verifyHandshake(messages) {
-        let handshakes = this.getMessagesByStatusCode(messages, Message.StatusCodes.post_handshake)
-        if (handshakes.length === 0) {
+        let handshake_messages = this.getMessagesByStatusCode(messages, Message.StatusCodes.post_handshake)
+        if (handshake_messages.length === 0) {
             return false
         }
         console.log('received handshake successfully')
         return true // should check if handshake actually succeded
     }
 
-    getMessagesByStatusCode(messages, status) {
+    updateContacts(messages) {
+        let contact_messages = this.getMessagesByStatusCode(messages, Message.StatusCodes.post_key)
+        contact_messages.forEach((message)=>{
+            this.mailBox.contacts.update_contact(message.from,message.body);
+            // this.contacts[message.from]=message.body;
+        })
+    }
+
+    getMessagesByStatusCode(messages, status) {        
         return messages.filter(message => message.status === status)
     }
 

@@ -15,7 +15,7 @@ export class Sync {
         wait_interval       = !wait_interval ? 1000 : wait_interval
         this.loop           = new IntervalLoop({
             loop_function: async () => {
-                await this.MangeState.handleState()
+                await this.MangeState.handle()
                 // await this.receiveNewMessages()
                 await this.retryFailedMessages()
             },

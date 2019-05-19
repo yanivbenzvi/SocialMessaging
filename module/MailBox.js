@@ -1,4 +1,6 @@
 import {Message} from './Message'
+import { Contacts } from './Contacts';
+import { MessageFactory } from './MessageFactory';
 
 /**this is the main mail box class*/
 export class MailBox {
@@ -12,6 +14,7 @@ export class MailBox {
         this.received_messages = []
         this.sent_messages     = []
         this.messages_queue    = []
+        this.contacts = new Contacts()
     }
 
     /**
@@ -19,14 +22,7 @@ export class MailBox {
      * and will push the message to the message queue.
      */
     sendMessage(to, textMessage) {
-        let messageObject = {
-            to:     to,
-            from:   this.ownerName,
-            status: Message.StatusCodes.message,
-            time:   new Date(),
-            body:   textMessage,
-        }
-
+        let messageObject = new MessageFactory(this).message(to,textMessage)
         let message = new Message(messageObject)
         this.sendMessageObject(message)
     }
@@ -56,11 +52,11 @@ export class MailBox {
      * and will sort the array by date.
      * @returns {Array<Message>}
      */
-    getAllMessages() {
+    getAllMessages() {        
         return Array.from(this.received_messages)
                     .concat(this.sent_messages)
                     .concat(this.messages_queue)
-                    .filter(message => message.status === Message.StatusCodes.message)
+                    .filter(message => message.status == Message.StatusCodes.message)
                     .sort((message1, message2) => {
                         return message1.time > message2.time
                     })
