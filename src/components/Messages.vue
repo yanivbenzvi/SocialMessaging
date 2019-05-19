@@ -3,8 +3,9 @@
         <v-layout column fill-height>
 
             <v-flex class="scrollable pl-1 pr-4">
-                <template v-for="message in messages">
-                    <v-layout :class="message.from===id ? 'justify-start' : 'justify-end '" :key="message.mKey">
+                <template v-for="(message,index) in messages">
+                    <v-layout :class="message.from===id ? 'justify-start' : 'justify-end '"
+                              :key="message.mKey + '-' + index">
                         <v-flex xs3>
                             <v-card :class="message.from===id ? 'my-2 mx-12': 'my-2 mx-12 blue-grey lighten-1'"
                                     transition="scale-transition">
@@ -53,9 +54,10 @@
 </template>
 
 <script>
-    import { MailBox }    from '../../module/MailBox'
-    import { Sync }     from '../../module/Sync'
-    import { timeConverter } from '../../module/utils/Utils'
+    import {MailBox}       from '../../module/MailBox'
+    import {Sync}          from '../../module/Sync'
+    import {timeConverter} from '../../module/utils/Utils'
+
     export default {
 
         props: ['id'],
@@ -65,34 +67,34 @@
         data() {
             return {
                 plainTextMessage: '',
-                mailBox: null,
-                sync: null,
+                mailBox:          null,
+                sync:             null,
             }
         },
 
         created() {
-            this.mailBox = new MailBox({ownerName: this.id});
-            this.sync = new Sync(this.mailBox,{wait_interval:30000}); //30 sec
+            this.mailBox = new MailBox({ownerName: this.id})
+            this.sync    = new Sync(this.mailBox, {wait_interval: 30000}) //30 sec
         },
 
         mounted() {
             this.sync.start()
         },
 
-        destroyed(){
-            this.sync.stop();
+        destroyed() {
+            this.sync.stop()
         },
 
         computed: {
             messages() {
-                return this.mailBox.getAllMessages();
+                return this.mailBox.getAllMessages()
             },
         },
 
         methods: {
             appendMessage() {
-                this.mailBox.sendMessage(this.id === 'A' ? 'B' : 'A', this.plainTextMessage);
-                this.plainTextMessage = '';
+                this.mailBox.sendMessage(this.id === 'A' ? 'B' : 'A', this.plainTextMessage)
+                this.plainTextMessage = ''
             },
             timeConverter,
         },

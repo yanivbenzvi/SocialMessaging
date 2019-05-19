@@ -1,0 +1,12 @@
+
+export class TwitterPage{
+
+
+
+    handSakeMessage(){
+
+    }
+
+
+
+}
