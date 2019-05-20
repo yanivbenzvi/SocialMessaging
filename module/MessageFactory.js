@@ -5,8 +5,8 @@ export class MessageFactory {
     static get handshake_text(){
         return "this is handshake"
     }
-    static verify_handshake_message(decrypted_handshake_message){
-        return decrypted_handshake_message.body === MessageFactory.handshake_text
+    static verify_handshake_message(txt){
+        return txt === MessageFactory.handshake_text
     }
 
     constructor(mailBox) {

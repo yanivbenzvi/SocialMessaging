@@ -33,10 +33,6 @@ export class Rsa {
         return this.RsaModule.encrypt(plainText, 'base64')
     }
 
-    decrypt3dKey(encryptText, key) {
-
-    }
-
     /**
      *
      * @param encryptText
