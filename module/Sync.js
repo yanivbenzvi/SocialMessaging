@@ -45,23 +45,38 @@ export class Sync {
         eventify_clear(this.mailBox.messages_queue)
     }
 
+    
     async sendNewMessage(message) {
+        if(message.status === Message.StatusCodes.message){
+            return await this.sendNormalMessage(message);
+        }
+        else{
+            return await this.sendMessage(message);
+        }
+    }
+
+    async sendNormalMessage(message){
         if (this.MangeState.currentState === ManageState.states.ready_to_start_communication) {
-            try {
+            let public_key = this.mailBox.contacts.get_contact_key(message.to)
+            console.log("the key i'll encrypt message with is :', public_key")
 
-                let public_key = this.mailBox.contacts.get_contact_key(message.to)
-                console.log("the key i'll encrypt message with is :', public_key")
-
-                let id = await this.twitter.post(message.to_JSON())
-                message.addAttributes({twitterId: id})
-                console.log('sent a new message: ', message)
-                array_remove(this.mailBox.messages_queue, message)
-                this.mailBox.sent_messages.push(message)
-            } catch (err) {
-                console.log('failed sending, will do again later', err)
-            }
+            //encryption 
+            // message.body = encrypt(message.body,public_key)
+            return await this.sendMessage(message);
         } else {
             console.log('not ready to send yet.')
+        }
+    }
+
+    async sendMessage(message){
+        try {
+            let id = await this.twitter.post(message.to_JSON())
+            message.addAttributes({twitterId: id})
+            console.log('sent a new message: ', message)
+            array_remove(this.mailBox.messages_queue, message)
+            this.mailBox.sent_messages.push(message)
+        } catch (err) {
+            console.log('failed sending, will do again later', err)
         }
     }
 
