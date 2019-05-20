@@ -16,12 +16,9 @@
         "fb": "^2.0.0",
         "keypair": "^1.0.1",
         "lodash": "^4.17.11",
-<<<<<<< HEAD
         "md5": "^2.2.1",
         "twitter": "^1.7.1",
-=======
         "node-rsa": "^1.0.5",
->>>>>>> feature/rsa-method
         "vue": "^2.6.8",
         "vue-router": "^3.0.2",
         "vue-template-compiler": "^2.6.8",
