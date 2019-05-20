@@ -32,7 +32,8 @@ export class MessageFactory {
 
     message(to, body) {
         // need to add encryption to this body, access encryption methods through this.mailBox
-        return this._basic_message(to, Message.StatusCodes.message, body)
+        const encrypt_message = this.mailBox.rsa.encrypt3dKey(body,this.mailBox.contacts.get_contact_key(to))
+        return this._basic_message(to, Message.StatusCodes.message, encrypt_message)
     }
 
     _basic_message(to, status, body) {

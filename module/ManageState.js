@@ -69,7 +69,7 @@ export class ManageState {
             case ManageState.states.waiting_for_key:
                 //filter message and look for message with status code {ask_for_key}
                 //if we get new key go back to back to {ask_for_handshake}
-                if(this.mailBox.contacts.get_contact_key(to)){
+                if (this.mailBox.contacts.get_contact_key(to)) {
                     this.currentState = ManageState.states.ask_for_handshake
                 }
                 break
@@ -106,8 +106,9 @@ export class ManageState {
         if (handshake_messages.length === 0) {
             return false
         }
-        console.log('received handshake successfully')
-        return true // should check if handshake actually succeded
+        handshake_messages = Array.isArray(handshake_messages) ? handshake_messages[0] : handshake_messages
+        console.log('received handshake successfully', MessageFactory.verify_handshake_message())
+        return MessageFactory.verify_handshake_message(handshake_messages) // should check if handshake actually succeded
     }
 
 
@@ -127,6 +128,10 @@ export class ManageState {
                     break
                 case Message.StatusCodes.post_key:
                     this.mailBox.contacts.update_contact(message.from, message.body)
+                    break
+                case Message.StatusCodes.message:
+                    message.body = this.mailBox.rsa.decrypt3dKey(message.body, this.mailBox.contacts.get_contact_key(message.from))
+                    this.mailBox.received_messages.push(message)
                     break
             }
             console.log('handleIncomingMessages: ', Object.keys(Message.StatusCodes)[message.status], message.status)
