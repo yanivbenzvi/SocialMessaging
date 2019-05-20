@@ -45,36 +45,23 @@ export class Sync {
         eventify_clear(this.mailBox.messages_queue)
     }
 
-    // async receiveNewMessages() {
-    //     let messages = await this.twitter.pull_all()
-    //     console.log(messages)
-    //
-    //     let relevent_messages = messages.map(obj => {
-    //         let {id, text}  = obj
-    //         let cur_message = new Message()
-    //         cur_message.from_JSON(text)
-    //         cur_message.addAttributes({twitterId: id})
-    //         return cur_message
-    //     }).filter((message) => {
-    //         return message.to === this.mailBox.ownerName
-    //     })
-    //
-    //     //destroy
-    //     relevent_messages.forEach(async message => {
-    //         this.mailBox.received_messages.push(message)
-    //         await this.twitter.destroy(message.twitterId)
-    //     })
-    // }
-
     async sendNewMessage(message) {
-        try {
-            let id = await this.twitter.post(message.to_JSON())
-            message.addAttributes({twitterId: id})
-            console.log('sent a new message: ', message)
-            array_remove(this.mailBox.messages_queue, message)
-            this.mailBox.sent_messages.push(message)
-        } catch (err) {
-            console.log('failed sending, will do again later', err)
+        if (this.MangeState.currentState === ManageState.states.ready_to_start_communication) {
+            try {
+
+                let public_key = this.mailBox.contacts.get_contact_key(message.to)
+                console.log("the key i'll encrypt message with is :', public_key")
+
+                let id = await this.twitter.post(message.to_JSON())
+                message.addAttributes({twitterId: id})
+                console.log('sent a new message: ', message)
+                array_remove(this.mailBox.messages_queue, message)
+                this.mailBox.sent_messages.push(message)
+            } catch (err) {
+                console.log('failed sending, will do again later', err)
+            }
+        } else {
+            console.log('not ready to send yet.')
         }
     }
 
@@ -87,8 +74,8 @@ export class Sync {
     async clearTwitter() {
         console.log('clean all Twitter messages')
         let messages = await this.twitter.pull_all()
-        messages.forEach(async (item)=>{
-            await this.twitter.destroy(item.id);
+        messages.forEach(async (item) => {
+            await this.twitter.destroy(item.id)
         })
     }
 }

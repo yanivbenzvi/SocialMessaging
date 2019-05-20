@@ -33,6 +33,8 @@ export class ManageState {
     handleState(messages){
         const to       = this.mailBox.ownerName === 'A' ? 'B' : 'A'
         console.log('current state:', Object.keys(ManageState.states)[this.currentState], this.currentState)
+
+
         switch (this.currentState) {
             case ManageState.states.initial_state:
                 this.currentState = ManageState.states.ask_for_handshake
@@ -52,24 +54,20 @@ export class ManageState {
                         this.currentState = ManageState.states.ready_to_start_communication
                     } else {
                         this.currentState = ManageState.states.ask_for_key
-                        // rehandle ////////////////////////////////////////////////////////////////////////////////
-                        this.handleState(messages)
                     }
                 }
                 break
             case ManageState.states.ask_for_key:
                 //send message with code {ask_for_key}
-                this.sendMessageObject(this.messageFactory.ask_for_key(to))
+                this.mailBox.sendMessageObject(this.messageFactory.ask_for_key(to))
                 this.currentState = ManageState.states.waiting_for_key
                 break
             case ManageState.states.waiting_for_key:
                 //filter message and look for message with status code {ask_for_key}
                 //if we get new key go back to back to {ask_for_handshake}
                 if (this.getMessagesByStatusCode(messages, Message.StatusCodes.post_key).length > 0) {
-                    updateContacts(messages)
+                    this.updateContacts(messages)
                     this.currentState = ManageState.states.ask_for_handshake
-                    // rehandle ////////////////////////////////////////////////////////////////////////////////
-                    this.handleState(messages)
                 }
                 break
             case ManageState.states.ready_to_start_communication:
