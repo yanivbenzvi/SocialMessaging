@@ -24,7 +24,7 @@ export class MailBox {
      * and will push the message to the message queue.
      */
     sendMessage(to, textMessage) {
-        let messageObject = new MessageFactory(this).message(to,textMessage)
+        let messageObject = new MessageFactory(this).plain_message(to,textMessage)
         let message = new Message(messageObject)
         this.sendMessageObject(message)
     }

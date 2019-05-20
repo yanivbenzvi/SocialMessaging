@@ -2,10 +2,11 @@ import {Message} from './Message.js'
 
 export class MessageFactory {
 
-    static get handshake_text(){
-        return "this is handshake"
+    static get handshake_text() {
+        return 'this is handshake'
     }
-    static verify_handshake_message(txt){
+
+    static verify_handshake_message(txt) {
         return txt === MessageFactory.handshake_text
     }
 
@@ -17,8 +18,12 @@ export class MessageFactory {
         return this._basic_message(to, Message.StatusCodes.ask_for_handshake, '')
     }
 
-    post_handshake(to) {
-        const encrypt_handshake = this.mailBox.rsa.encrypt3dKey(MessageFactory.handshake_text,this.mailBox.contacts.get_contact_key(to))
+    async post_handshake(to) {
+        console.log('##################### handshake ########################')
+        console.log('MessageFactory.handshake_text: ', MessageFactory.handshake_text)
+        console.log('this.mailBox.contacts.get_contact_key(to): ', this.mailBox.contacts.get_contact_key(to))
+        const encrypt_handshake = await this.mailBox.rsa.encrypt3dKey(MessageFactory.handshake_text, this.mailBox.contacts.get_contact_key(to))
+        console.log('encrypt_handshake: ', encrypt_handshake, 'to: ', to)
         return this._basic_message(to, Message.StatusCodes.post_handshake, encrypt_handshake)
     }
 
@@ -27,13 +32,17 @@ export class MessageFactory {
     }
 
     post_key(to) {
-        return this._basic_message(to, Message.StatusCodes.post_key, this.mailBox.rsa.exportPublicKey().replace(/\n/g, ''))
+        return this._basic_message(to, Message.StatusCodes.post_key, this.mailBox.rsa.exportPublicKey())
     }
 
-    message(to, body) {
+    async message(to, body) {
         // need to add encryption to this body, access encryption methods through this.mailBox
-        const encrypt_message = this.mailBox.rsa.encrypt3dKey(body,this.mailBox.contacts.get_contact_key(to))
+        const encrypt_message = await this.mailBox.rsa.encrypt3dKey(body, this.mailBox.contacts.get_contact_key(to))
         return this._basic_message(to, Message.StatusCodes.message, encrypt_message)
+    }
+
+    plain_message(to, body) {
+        return this._basic_message(to, Message.StatusCodes.message, body)
     }
 
     _basic_message(to, status, body) {

@@ -121,14 +121,14 @@ export class ManageState {
     }
 
 
-    handleIncomingMessages(messages) {
-        messages.forEach((message) => {
+    async handleIncomingMessages(messages) {
+        await messages.forEach(async message => {
             switch (message.status) {
                 case Message.StatusCodes.ask_for_key:
                     this.mailBox.sendMessageObject(this.messageFactory.post_key(message.from))
                     break
                 case Message.StatusCodes.ask_for_handshake:
-                    this.mailBox.sendMessageObject(this.messageFactory.post_handshake(message.from))
+                    this.mailBox.sendMessageObject(await this.messageFactory.post_handshake(message.from))
                     break
                 case Message.StatusCodes.post_key:
                     this.mailBox.contacts.update_contact(message.from, message.body)
