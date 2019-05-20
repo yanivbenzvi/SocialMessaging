@@ -19,7 +19,6 @@ export class MessageFactory {
 
     post_handshake(to) {
         const encrypt_handshake = this.mailBox.rsa.encrypt3dKey(MessageFactory.handshake_text,this.mailBox.contacts.get_contact_key(to))
-        console.log(encrypt_handshake)
         return this._basic_message(to, Message.StatusCodes.post_handshake, encrypt_handshake)
     }
 
@@ -28,8 +27,7 @@ export class MessageFactory {
     }
 
     post_key(to) {
-        console.log(this.mailBox.rsa.exportPublicKey().replace('/', '\\/'))
-        return this._basic_message(to, Message.StatusCodes.post_key, this.mailBox.rsa.exportPublicKey().replace('/', '\\/'))
+        return this._basic_message(to, Message.StatusCodes.post_key, this.mailBox.rsa.exportPublicKey().replace(/\n/g, ''))
     }
 
     message(to, body) {

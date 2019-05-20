@@ -69,8 +69,7 @@ export class ManageState {
             case ManageState.states.waiting_for_key:
                 //filter message and look for message with status code {ask_for_key}
                 //if we get new key go back to back to {ask_for_handshake}
-                if (this.getMessagesByStatusCode(messages, Message.StatusCodes.post_key).length > 0) {
-                    this.updateContacts(messages)
+                if(this.mailBox.contacts.get_contact_key(to)){
                     this.currentState = ManageState.states.ask_for_handshake
                 }
                 break
@@ -82,7 +81,6 @@ export class ManageState {
 
     async getAllTwitterMessage() {
         let messages = await this.twitter.pull_all()
-        console.log(messages)
 
         let relevent_messages = messages.map(obj => {
             let {id, text}  = obj
@@ -134,6 +132,8 @@ export class ManageState {
                 case Message.StatusCodes.ask_for_handshake:
                     this.mailBox.sendMessageObject(this.messageFactory.post_handshake(message.from))
                     break
+                case Message.StatusCodes.post_key:
+                    this.mailBox.contacts.update_contact(message.to,message.body)
             }
             console.log('handleIncomingMessages: ', Object.keys(Message.StatusCodes)[message.status], message.status)
         })

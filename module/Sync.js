@@ -25,12 +25,12 @@ export class Sync {
 
     start() {
         this.clear_sending()
-        this.init_sending()
+        // this.init_sending()  /////////////////////////////////////////////////////////////////////
         this.loop.start()
     }
 
     stop() {
-        this.loop.stop()
+        // this.loop.stop() /////////////////////////////////////////////////////////////////////////
         this.clear_sending()
     }
 
