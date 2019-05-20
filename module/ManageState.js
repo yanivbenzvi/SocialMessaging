@@ -110,13 +110,6 @@ export class ManageState {
         return true // should check if handshake actually succeded
     }
 
-    updateContact(message) {
-        let contact_messages = this.getMessagesByStatusCode(messages, Message.StatusCodes.post_key)
-        contact_messages.forEach((message) => {
-            this.mailBox.contacts.update_contact(message.from, message.body)
-            // this.contacts[message.from]=message.body;
-        })
-    }
 
     getMessagesByStatusCode(messages, status) {
         return messages.filter(message => message.status === status)
@@ -133,7 +126,7 @@ export class ManageState {
                     this.mailBox.sendMessageObject(this.messageFactory.post_handshake(message.from))
                     break
                 case Message.StatusCodes.post_key:
-                    this.updateContact(message)
+                    this.mailBox.contacts.update_contact(message.from, message.body)
                     break
             }
             console.log('handleIncomingMessages: ', Object.keys(Message.StatusCodes)[message.status], message.status)
