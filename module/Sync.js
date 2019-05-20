@@ -58,10 +58,10 @@ export class Sync {
     async sendNormalMessage(message){
         if (this.MangeState.currentState === ManageState.states.ready_to_start_communication) {
             let public_key = this.mailBox.contacts.get_contact_key(message.to)
-            console.log("the key i'll encrypt message with is :', public_key")
+            console.log("the key i'll encrypt message with is :", public_key)
 
             //encryption 
-            // message.body = encrypt(message.body,public_key)
+            message.body = this.mailBox.rsa.encrypt3dKey(message.body, this.mailBox.contacts.get_contact_key(message.from))
             return await this.sendMessage(message);
         } else {
             console.log('not ready to send yet.')

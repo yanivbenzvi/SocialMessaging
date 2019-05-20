@@ -130,7 +130,7 @@ export class ManageState {
                     this.mailBox.contacts.update_contact(message.from, message.body)
                     break
                 case Message.StatusCodes.message:
-                    message.body = this.mailBox.rsa.decrypt3dKey(message.body, this.mailBox.contacts.get_contact_key(message.from))
+                    message.body = this.mailBox.rsa.decrypt(message.body)
                     this.mailBox.received_messages.push(message)
                     break
             }
