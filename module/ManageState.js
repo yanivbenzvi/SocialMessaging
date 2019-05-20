@@ -57,6 +57,7 @@ export class ManageState {
                     if (this.verifyHandshake(messages)) {
                         this.currentState = ManageState.states.ready_to_start_communication
                     } else {
+                        this.mailBox.contacts.update_contact(to,"")
                         this.currentState = ManageState.states.ask_for_key
                     }
                 }
@@ -107,9 +108,10 @@ export class ManageState {
             return false
         }
         handshake_messages = Array.isArray(handshake_messages) ? handshake_messages[0] : handshake_messages
-        console.log(handshake_messages);
+        console.log('handshake_messages', handshake_messages.body)
         const decryptMessage = this.mailBox.rsa.decrypt(handshake_messages.body)
-        console.log('received handshake successfully', MessageFactory.verify_handshake_message(decryptMessage))
+        console.log('decryptMessage: ', decryptMessage)
+        console.log('received handshake', MessageFactory.verify_handshake_message(decryptMessage))
         return MessageFactory.verify_handshake_message(decryptMessage) // should check if handshake actually succeded
     }
 
