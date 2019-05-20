@@ -1,31 +1,27 @@
 import NodeRSA from 'node-rsa'
 
 /**
- *
+ * utility for generate Rsa key and encrypt and decrypt text
  */
 export class Rsa {
 
     constructor() {
-        let signingSchemes = ['pkcs1', 'pss']
+        let signingSchemes     = ['pkcs1', 'pss']
         let signHashAlgorithms = {
-            'node': ['MD4', 'MD5', 'RIPEMD160', 'SHA1', 'SHA224', 'SHA256', 'SHA384', 'SHA512'],
-            'browser': ['MD5', 'RIPEMD160', 'SHA1', 'SHA256', 'SHA512']
+            'node':    ['MD4', 'MD5', 'RIPEMD160', 'SHA1', 'SHA224', 'SHA256', 'SHA384', 'SHA512'],
+            'browser': ['MD5', 'RIPEMD160', 'SHA1', 'SHA256', 'SHA512'],
         }
-        this.RsaModule = new NodeRSA({b: 512, signingScheme: 'pkcs1-SHA512'})
-
-        this.externalPublicKey = null
-
-        //should be remove
-        this.privateKey = this.RsaModule.exportKey()
-        this.publicKey = this.RsaModule.exportKey('public')
-        //should be remove
+        this.RsaModule         = new NodeRSA({b: 512, signingScheme: 'pkcs1-SHA512'})
     }
 
     /**
-     *
+     * Encrypt text with external key.
      * @param plainText
      */
-    encrypt3dKey(plainText) {
+    async encrypt3dKey(plainText, externalPublicKey) {
+        const RsaTmp = new Rsa()
+        await RsaTmp.importPublicKey(externalPublicKey)
+        return RsaTmp.encrypt(plainText)
     }
 
     /**
@@ -38,6 +34,7 @@ export class Rsa {
     }
 
     decrypt3dKey(encryptText, key) {
+
     }
 
     /**
