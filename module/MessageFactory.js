@@ -1,24 +1,35 @@
 import {Message} from './Message.js'
 
 export class MessageFactory {
+
+    static get handshake_text(){
+        return "this is handshake"
+    }
+    static verify_handshake_message(decrypted_handshake_message){
+        return decrypted_handshake_message.body === MessageFactory.handshake_text
+    }
+
     constructor(mailBox) {
         this.mailBox = mailBox
     }
 
-    get_handshake(to) {
+    ask_for_handshake(to) {
         return this._basic_message(to, Message.StatusCodes.ask_for_handshake, '')
     }
 
     post_handshake(to) {
-        return this._basic_message(to, Message.StatusCodes.post_handshake, 'this is handshake')
+        const encrypt_handshake = this.mailBox.rsa.encrypt3dKey(MessageFactory.handshake_text,this.mailBox.contacts.get_contact_key(to))
+        console.log(encrypt_handshake)
+        return this._basic_message(to, Message.StatusCodes.post_handshake, encrypt_handshake)
     }
 
-    get_key(to) {
+    ask_for_key(to) {
         return this._basic_message(to, Message.StatusCodes.ask_for_key, '')
     }
 
     post_key(to) {
-        return this._basic_message(to, Message.StatusCodes.post_key, 'this is my key, take it')
+        console.log(this.mailBox.rsa.exportPublicKey().replace('/', '\\/'))
+        return this._basic_message(to, Message.StatusCodes.post_key, this.mailBox.rsa.exportPublicKey().replace('/', '\\/'))
     }
 
     message(to, body) {

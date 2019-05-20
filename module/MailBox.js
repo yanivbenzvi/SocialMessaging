@@ -1,6 +1,7 @@
-import {Message} from './Message'
-import { Contacts } from './Contacts';
+import {Message}          from './Message'
+import { Contacts }       from './Contacts';
 import { MessageFactory } from './MessageFactory';
+import {Rsa}              from './Rsa'
 
 /**this is the main mail box class*/
 export class MailBox {
@@ -15,6 +16,7 @@ export class MailBox {
         this.sent_messages     = []
         this.messages_queue    = []
         this.contacts = new Contacts()
+        this.rsa = new Rsa();
     }
 
     /**

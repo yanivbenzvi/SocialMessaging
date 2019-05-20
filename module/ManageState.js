@@ -27,11 +27,11 @@ export class ManageState {
         const messages = await this.getAllTwitterMessage()
         //filter message and look for status code {ask_for_handshake} and send handshake
         this.handleIncomingMessages(messages)
-        this.handleState(messages)        
+        this.handleState(messages)
     }
 
-    handleState(messages){
-        const to       = this.mailBox.ownerName === 'A' ? 'B' : 'A'
+    handleState(messages) {
+        const to = this.mailBox.ownerName === 'A' ? 'B' : 'A'
         console.log('current state:', Object.keys(ManageState.states)[this.currentState], this.currentState)
 
 
@@ -40,9 +40,13 @@ export class ManageState {
                 this.currentState = ManageState.states.ask_for_handshake
                 break
             case ManageState.states.ask_for_handshake:
-                //send message with status code {handshake} (asking for handshake)
-                this.mailBox.sendMessageObject(this.messageFactory.post_handshake(to))
-                this.currentState = ManageState.states.waiting_for_handshake
+                //send message with status code {handshake} (asking for handshake) only if 'to' contact has a key
+                if (!this.mailBox.contacts.get_contact_key(to)) {
+                    this.currentState = ManageState.states.ask_for_key
+                } else {
+                    this.mailBox.sendMessageObject(this.messageFactory.post_handshake(to))
+                    this.currentState = ManageState.states.waiting_for_handshake
+                }
                 break
             case ManageState.states.waiting_for_handshake:
                 //filter message and look for message with status code {sending_handshake}
@@ -110,13 +114,13 @@ export class ManageState {
 
     updateContacts(messages) {
         let contact_messages = this.getMessagesByStatusCode(messages, Message.StatusCodes.post_key)
-        contact_messages.forEach((message)=>{
-            this.mailBox.contacts.update_contact(message.from,message.body);
+        contact_messages.forEach((message) => {
+            this.mailBox.contacts.update_contact(message.from, message.body)
             // this.contacts[message.from]=message.body;
         })
     }
 
-    getMessagesByStatusCode(messages, status) {        
+    getMessagesByStatusCode(messages, status) {
         return messages.filter(message => message.status === status)
     }
 
@@ -131,6 +135,7 @@ export class ManageState {
                     this.mailBox.sendMessageObject(this.messageFactory.post_handshake(message.from))
                     break
             }
+            console.log('handleIncomingMessages: ', Object.keys(Message.StatusCodes)[message.status], message.status)
         })
     }
 
