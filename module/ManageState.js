@@ -27,10 +27,10 @@ export class ManageState {
         const messages = await this.getAllTwitterMessage()
         //filter message and look for status code {ask_for_handshake} and send handshake
         await this.handleIncomingMessages(messages)
-        this.handleState(messages)
+        await this.handleState(messages)
     }
 
-    handleState(messages) {
+    async handleState(messages) {
         const to = this.mailBox.ownerName === 'A' ? 'B' : 'A'
         console.log('current state:', Object.keys(ManageState.states)[this.currentState], this.currentState)
 
@@ -44,7 +44,7 @@ export class ManageState {
                 if (!this.mailBox.contacts.get_contact_key(to)) {
                     this.currentState = ManageState.states.ask_for_key
                 } else {
-                    this.mailBox.sendMessageObject(this.messageFactory.post_handshake(to))
+                    this.mailBox.sendMessageObject(await this.messageFactory.post_handshake(to))
                     this.currentState = ManageState.states.waiting_for_handshake
                 }
                 break
@@ -108,10 +108,7 @@ export class ManageState {
             return false
         }
         handshake_messages = Array.isArray(handshake_messages) ? handshake_messages[0] : handshake_messages
-        console.log('handshake_messages', handshake_messages.body)
         const decryptMessage = this.mailBox.rsa.decrypt(handshake_messages.body)
-        console.log('decryptMessage: ', decryptMessage)
-        console.log('received handshake', MessageFactory.verify_handshake_message(decryptMessage))
         return MessageFactory.verify_handshake_message(decryptMessage) // should check if handshake actually succeded
     }
 

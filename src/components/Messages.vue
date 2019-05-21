@@ -49,6 +49,9 @@
                             Clean Twitter
                             <v-icon left>refresh</v-icon>
                         </v-btn>
+                        <v-btn flat disabled>
+                            {{currentState}}
+                        </v-btn>
                     </v-flex>
                 </v-layout>
             </v-flex>
@@ -60,6 +63,7 @@
     import {MailBox}       from '../../module/MailBox'
     import {Sync}          from '../../module/Sync'
     import {timeConverter} from '../../module/utils/Utils'
+    import {ManageState} from '../../module/ManageState'
 
     export default {
 
@@ -92,6 +96,10 @@
             messages() {
                 return this.mailBox.getAllMessages()
             },
+
+            currentState(){
+                return Object.keys(ManageState.states)[this.sync.MangeState.currentState]
+            }
         },
 
         methods: {
