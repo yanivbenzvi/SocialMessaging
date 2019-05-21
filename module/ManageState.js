@@ -35,7 +35,7 @@ export class ManageState {
 
     async handleState(messages) {
         const not_relevent_messages = messages[1]
-        const messages = messages[0]
+        messages = messages[0]
         const to = this.mailBox.ownerName === 'A' ? 'B' : 'A'
         
         switch (this.currentState) {
@@ -91,7 +91,7 @@ export class ManageState {
     }
 
     async getAllTwitterMessage() {
-        let messages = await this.twitter.pull_all().map(obj => {
+        let messages = (await this.twitter.pull_all()).map(obj => {
             let {id, text}  = obj
             let cur_message = new Message()
             cur_message.from_JSON(text)
