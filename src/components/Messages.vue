@@ -6,7 +6,7 @@
                 <template v-for="(message,index) in messages">
                     <v-layout :class="message.from===id ? 'justify-start' : 'justify-end '"
                               :key="message.mKey + '-' + index">
-                        <v-flex xs3>
+                        <v-flex xs6>
                             <v-card :class="message.from===id ? 'my-2 mx-12': 'my-2 mx-12 blue-grey lighten-1'"
                                     transition="scale-transition">
                                 <v-card-text>{{message.body}}</v-card-text>
@@ -50,7 +50,7 @@
                             <v-icon left>refresh</v-icon>
                         </v-btn>
                         <v-btn flat disabled>
-                            {{currentState}}
+                            {{state}}
                         </v-btn>
                     </v-flex>
                 </v-layout>
@@ -63,7 +63,7 @@
     import {MailBox}       from '../../module/MailBox'
     import {Sync}          from '../../module/Sync'
     import {timeConverter} from '../../module/utils/Utils'
-    import {ManageState} from '../../module/ManageState'
+    import {ManageState}   from '../../module/ManageState'
 
     export default {
 
@@ -75,7 +75,8 @@
             return {
                 plainTextMessage: '',
                 mailBox:          null,
-                Msync:             null,
+                sync:             null,
+                state:            'none',
             }
         },
 
@@ -97,9 +98,16 @@
                 return this.mailBox.getAllMessages()
             },
 
-            currentState(){
-                return Object.keys(ManageState.states)[this.sync.MangeState.currentState]
-            }
+            currentState() {
+                return this.sync ? this.sync.MangeState.currentState : 0
+            },
+        },
+
+        watch: {
+            ['currentState']() {
+                console.log(this.currentState)
+                this.state = Object.keys(ManageState.states)[this.currentState]
+            },
         },
 
         methods: {

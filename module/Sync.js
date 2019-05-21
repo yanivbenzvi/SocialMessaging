@@ -10,6 +10,7 @@ export class Sync {
         this.twitter    = TwitterAPI.get_client()
         this.mailBox    = mailBox
         this.MangeState = new ManageState(mailBox)
+        console.log('current state:', Object.keys(ManageState.states)[this.MangeState.currentState], this.MangeState.currentState)
 
         let {wait_interval} = options
         wait_interval       = !wait_interval ? 1000 : wait_interval

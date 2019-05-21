@@ -32,8 +32,6 @@ export class ManageState {
 
     async handleState(messages) {
         const to = this.mailBox.ownerName === 'A' ? 'B' : 'A'
-        console.log('current state:', Object.keys(ManageState.states)[this.currentState], this.currentState)
-
 
         switch (this.currentState) {
             case ManageState.states.initial_state:
@@ -78,6 +76,7 @@ export class ManageState {
                 // receive and send message queue !!!!!!!
                 break
         }
+        console.log('current state:', Object.keys(ManageState.states)[this.currentState], this.currentState)
     }
 
     async getAllTwitterMessage() {
