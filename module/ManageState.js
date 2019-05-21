@@ -25,14 +25,19 @@ export class ManageState {
     async handle() {
         //receive all message from twitter
         const messages = await this.getAllTwitterMessage()
+        const relevent_messages = messages[0]
+        const not_relevent_messages = messages[1]
+
         //filter message and look for status code {ask_for_handshake} and send handshake
-        await this.handleIncomingMessages(messages)
+        await this.handleIncomingMessages(relevent_messages)
         await this.handleState(messages)
     }
 
     async handleState(messages) {
+        const not_relevent_messages = messages[1]
+        const messages = messages[0]
         const to = this.mailBox.ownerName === 'A' ? 'B' : 'A'
-
+        
         switch (this.currentState) {
             case ManageState.states.initial_state:
                 this.currentState = ManageState.states.ask_for_handshake
@@ -60,6 +65,11 @@ export class ManageState {
                         this.currentState = ManageState.states.ask_for_key
                     }
                 }
+                else{
+                    if(not_relevent_messages.filter(message=>message.from==this.mailBox.ownerName&&message.to==to&&message.status==Message.StatusCodes.ask_for_handshake)==0){
+                        this.currentState=ManageState.states.ask_for_handshake;
+                    }
+                }
                 break
             case ManageState.states.ask_for_key:
                 //send message with code {ask_for_key}
@@ -81,16 +91,20 @@ export class ManageState {
     }
 
     async getAllTwitterMessage() {
-        let messages = await this.twitter.pull_all()
-
-        let relevent_messages = messages.map(obj => {
+        let messages = await this.twitter.pull_all().map(obj => {
             let {id, text}  = obj
             let cur_message = new Message()
             cur_message.from_JSON(text)
             cur_message.addAttributes({twitterId: id})
             return cur_message
-        }).filter((message) => {
+        })
+
+        let relevent_messages = messages.filter((message) => {
             return message.to === this.mailBox.ownerName
+        })
+        
+        let not_relevent_messages = messages.filter((message) => {
+            return message.to !== this.mailBox.ownerName
         })
 
         //destroy
@@ -99,7 +113,7 @@ export class ManageState {
             await this.twitter.destroy(message.twitterId)
         })
 
-        return relevent_messages
+        return [relevent_messages,not_relevent_messages]
     }
 
     verifyHandshake(messages) {
