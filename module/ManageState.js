@@ -128,7 +128,12 @@ export class ManageState {
                     this.mailBox.sendMessageObject(this.messageFactory.post_key(message.from))
                     break
                 case Message.StatusCodes.ask_for_handshake:
-                    this.mailBox.sendMessageObject(await this.messageFactory.post_handshake(message.from))
+                    if(!this.mailBox.contacts.get_contact_key(message.from)){
+                        this.currentState = ManageState.states.ask_for_key;
+                    }
+                    else{
+                        this.mailBox.sendMessageObject(await this.messageFactory.post_handshake(message.from))
+                    }
                     break
                 case Message.StatusCodes.post_key:
                     this.mailBox.contacts.update_contact(message.from, message.body)
