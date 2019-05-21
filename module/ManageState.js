@@ -26,7 +26,7 @@ export class ManageState {
         //receive all message from twitter
         const messages = await this.getAllTwitterMessage()
         //filter message and look for status code {ask_for_handshake} and send handshake
-        this.handleIncomingMessages(messages)
+        await this.handleIncomingMessages(messages)
         this.handleState(messages)
     }
 
