@@ -109,7 +109,7 @@ export class ManageState {
         }
         handshake_messages = Array.isArray(handshake_messages) ? handshake_messages[0] : handshake_messages
         const decryptMessage = this.mailBox.rsa.decrypt(handshake_messages.body)
-        console.log('######################## recived handsake now verify #####################')
+        console.log('######################## received handshake now verify #####################')
         console.log('decryptMessage: ', decryptMessage)
         console.log('verify successfully: ',MessageFactory.verify_handshake_message(decryptMessage))
         return MessageFactory.verify_handshake_message(decryptMessage) // should check if handshake actually succeded
