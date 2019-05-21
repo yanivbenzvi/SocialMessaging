@@ -13,12 +13,13 @@ export class Sync {
 
         let {wait_interval} = options
         wait_interval       = !wait_interval ? 1000 : wait_interval
+        this._loop = async () => {
+            await this.MangeState.handle()
+            // await this.receiveNewMessages()
+            await this.retryFailedMessages()
+        }
         this.loop           = new IntervalLoop({
-            loop_function: async () => {
-                await this.MangeState.handle()
-                // await this.receiveNewMessages()
-                await this.retryFailedMessages()
-            },
+            loop_function: this._loop,
             wait_interval: wait_interval,
         })
     }
@@ -26,11 +27,12 @@ export class Sync {
     start() {
         this.clear_sending()
         // this.init_sending()  /////////////////////////////////////////////////////////////////////
-        this.loop.start()
+        // this.loop.start()
+        this._loop();
     }
 
     stop() {
-        this.loop.stop() 
+        // this.loop.stop() 
         // this.clear_sending() /////////////////////////////////////////////////////////////////////////
     }
 
