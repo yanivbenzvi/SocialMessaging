@@ -38,11 +38,7 @@
                             Current User: {{id}}
                         </v-btn>
                         <v-btn flat @click="sync.start()">
-                            start sync
-                            <v-icon left>refresh</v-icon>
-                        </v-btn>
-                        <v-btn flat @click="sync.stop()">
-                            stop sync
+                            continue loop
                             <v-icon left>refresh</v-icon>
                         </v-btn>
                         <v-btn flat @click="sync.clearTwitter()">

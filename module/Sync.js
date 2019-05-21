@@ -64,7 +64,7 @@ export class Sync {
             console.log("the key i'll encrypt message with is :", public_key)
 
             //encryption 
-            message.body = this.mailBox.rsa.encrypt3dKey(message.body, this.mailBox.contacts.get_contact_key(message.from))
+            message.body = await this.mailBox.rsa.encrypt3dKey(message.body, this.mailBox.contacts.get_contact_key(message.to))
             return await this.sendMessage(message);
         } else {
             console.log('not ready to send yet.')
