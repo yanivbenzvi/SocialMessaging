@@ -3,6 +3,7 @@ import {Message}                                from './Message'
 import {IntervalLoop}                           from './IntervalLoop'
 import {eventify, eventify_clear, array_remove} from './utils/Utils'
 import {ManageState}                            from './ManageState'
+import { MessageFactory } from './MessageFactory';
 
 export class Sync {
 
@@ -64,8 +65,14 @@ export class Sync {
             console.log("the key i'll encrypt message with is :", public_key)
 
             //encryption 
-            message.body = this.mailBox.rsa.encrypt3dKey(message.body, this.mailBox.contacts.get_contact_key(message.from))
-            return await this.sendMessage(message);
+            let encrypt_text = await this.mailBox.rsa.encrypt3dKey(message.body, this.mailBox.contacts.get_contact_key(message.to))
+            let encrypt_message = new MessageFactory(this.mailBox).plain_message(message.to,encrypt_text)
+
+            let id = await this.twitter.post(encrypt_message.to_JSON())
+            message.addAttributes({twitterId: id})
+            console.log('sent a new encrypted message: ', message)
+            array_remove(this.mailBox.messages_queue, message)
+            this.mailBox.sent_messages.push(message)
         } else {
             console.log('not ready to send yet.')
         }
@@ -85,7 +92,6 @@ export class Sync {
 
     async sendQueueMessages() {
         console.log("sending messages in queue: ", this.mailBox.messages_queue);
-        
         for (let message of this.mailBox.messages_queue) {
             await this.sendNewMessage(message)
         }

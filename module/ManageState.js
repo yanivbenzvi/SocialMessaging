@@ -154,7 +154,6 @@ export class ManageState {
                     break
                 case Message.StatusCodes.message:
                     message.body = this.mailBox.rsa.decrypt(message.body)
-                    this.mailBox.received_messages.push(message)
                     break
             }
             console.log('handleIncomingMessages: ', Object.keys(Message.StatusCodes)[message.status], message.status)
