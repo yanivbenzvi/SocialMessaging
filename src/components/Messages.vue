@@ -86,11 +86,11 @@
         },
 
         mounted() {
-            this.sync.start()
+            //this.sync.start()
         },
 
         destroyed() {
-            this.sync.stop()
+            //this.sync.stop()
         },
 
         computed: {
@@ -105,7 +105,6 @@
 
         watch: {
             ['currentState']() {
-                console.log(this.currentState)
                 this.state = Object.keys(ManageState.states)[this.currentState]
             },
         },

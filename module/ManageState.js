@@ -42,7 +42,7 @@ export class ManageState {
                 if (!this.mailBox.contacts.get_contact_key(to)) {
                     this.currentState = ManageState.states.ask_for_key
                 } else {
-                    this.mailBox.sendMessageObject(await this.messageFactory.post_handshake(to))
+                    this.mailBox.sendMessageObject(this.messageFactory.ask_for_handshake(to))
                     this.currentState = ManageState.states.waiting_for_handshake
                 }
                 break
@@ -52,6 +52,7 @@ export class ManageState {
                 //if we not succeed to decode handshake message state will changed to has_no_key
                 //else change state to {ready_to_start_communication}
                 if (this.getMessagesByStatusCode(messages, Message.StatusCodes.post_handshake).length > 0) {
+                    console.log(messages)
                     if (this.verifyHandshake(messages)) {
                         this.currentState = ManageState.states.ready_to_start_communication
                     } else {
@@ -108,6 +109,9 @@ export class ManageState {
         }
         handshake_messages = Array.isArray(handshake_messages) ? handshake_messages[0] : handshake_messages
         const decryptMessage = this.mailBox.rsa.decrypt(handshake_messages.body)
+        console.log('######################## recived handsake now verify #####################')
+        console.log('decryptMessage: ', decryptMessage)
+        console.log('verify successfully: ',MessageFactory.verify_handshake_message(decryptMessage))
         return MessageFactory.verify_handshake_message(decryptMessage) // should check if handshake actually succeded
     }
 

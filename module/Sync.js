@@ -26,7 +26,7 @@ export class Sync {
     }
 
     start() {
-        this.clear_sending()
+        //this.clear_sending()
         // this.init_sending()  /////////////////////////////////////////////////////////////////////
         // this.loop.start()
         this._loop();
