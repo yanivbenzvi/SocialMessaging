@@ -1,7 +1,7 @@
-import {Message}          from './Message'
-import { Contacts }       from './Contacts';
-import { MessageFactory } from './MessageFactory';
-import {Rsa}              from './Rsa'
+import {Message}        from './Message'
+import {Contacts}       from './Contacts'
+import {MessageFactory} from './MessageFactory'
+import {Rsa}            from './Rsa'
 
 /**this is the main mail box class*/
 export class MailBox {
@@ -15,8 +15,8 @@ export class MailBox {
         this.received_messages = []
         this.sent_messages     = []
         this.messages_queue    = []
-        this.contacts = new Contacts()
-        this.rsa = new Rsa();
+        this.contacts          = new Contacts()
+        this.rsa               = new Rsa()
     }
 
     /**
@@ -24,8 +24,8 @@ export class MailBox {
      * and will push the message to the message queue.
      */
     sendMessage(to, textMessage) {
-        let messageObject = new MessageFactory(this).plain_message(to,textMessage)
-        let message = new Message(messageObject)
+        let messageObject = new MessageFactory(this).plain_message(to, textMessage)
+        let message       = new Message(messageObject)
         this.sendMessageObject(message)
     }
 
@@ -54,13 +54,18 @@ export class MailBox {
      * and will sort the array by date.
      * @returns {Array<Message>}
      */
-    getAllMessages() {        
-        return Array.from(this.received_messages)
-                    .concat(this.sent_messages)
-                    .concat(this.messages_queue)
-                    .filter(message => message.status == Message.StatusCodes.message)
-                    .sort((message1, message2) => {
-                        return message1.time > message2.time
-                    })
+    getAllMessages() {
+        const messages = Array.from(this.received_messages)
+                              .concat(this.sent_messages)
+                              .concat(this.messages_queue)
+                              .filter(message => message.status == Message.StatusCodes.message)
+                              .sort((message1, message2) => {
+                                  const a = new Date(message1.time),
+                                        b = new Date(message2.time)
+                                  return a < b ? -1 : a > b ? 1 : 0
+                                  //return message1.time > message2.time
+                              })
+        console.log(messages.map(message=> message.time))
+        return messages
     }
 }
