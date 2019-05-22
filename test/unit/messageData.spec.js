@@ -49,7 +49,7 @@ describe('MessageData', () => {
                 expect(message.is_valid()).to.be.equal(true);
             });
 
-            it.only('test', ()=>{
+            it('test', ()=>{
                 const json_text = `{"to":"B","from":"A","status":1,"time":"2019-05-20T16:13:38.412Z","body":"-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIfIAfV+5r0HG/uQCeYig9nXrrHfbWm6sfBzowTImL4HPwEtjw5tIhQBmlwyDnmrmVaY0UHPxqyV85Cj5jn751kCAwEAAQ==-----END PUBLIC KEY-----"}`
                 console.log(new Message().from_JSON(json_text))
             })

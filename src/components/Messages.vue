@@ -45,7 +45,7 @@
                             <v-icon left>refresh</v-icon>
                         </v-btn>
                         <v-btn flat disabled>
-                            {{state}}
+                            {{state}} {{send_state}}
                         </v-btn>
                     </v-flex>
                 </v-layout>
@@ -72,6 +72,7 @@
                 mailBox:          null,
                 sync:             null,
                 state:            'none',
+                send_state:       '',
             }
         },
 
@@ -96,11 +97,18 @@
             currentState() {
                 return this.sync ? this.sync.MangeState.currentState : ManageState.states.initial_state
             },
+            ready_to_send() {
+                return this.sync ? this.sync.MangeState.ready_to_send ? ', and ready to send' : '' : ''
+            },
         },
 
         watch: {
             ['currentState']() {
-                this.state = Object.keys(ManageState.states)[this.currentState] + (this.sync.MangeState.ready_to_send?", and ready to send":"")
+                this.state = Object.keys(ManageState.states)[this.currentState]
+            },
+
+            ['ready_to_send']() {
+                this.send_state = this.ready_to_send
             },
         },
 

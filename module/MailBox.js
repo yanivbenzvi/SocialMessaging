@@ -55,17 +55,15 @@ export class MailBox {
      * @returns {Array<Message>}
      */
     getAllMessages() {
-        const messages = Array.from(this.received_messages)
-                              .concat(this.sent_messages)
-                              .concat(this.messages_queue)
-                              .filter(message => message.status == Message.StatusCodes.message)
-                              .sort((message1, message2) => {
-                                  const a = new Date(message1.time),
-                                        b = new Date(message2.time)
-                                  return a < b ? -1 : a > b ? 1 : 0
-                                  //return message1.time > message2.time
-                              })
-        console.log(messages.map(message=> message.time))
-        return messages
+        return Array.from(this.received_messages)
+                    .concat(this.sent_messages)
+                    .concat(this.messages_queue)
+                    .filter(message => message.status == Message.StatusCodes.message)
+                    .sort((message1, message2) => {
+                        const a = new Date(message1.time),
+                              b = new Date(message2.time)
+                        return a < b ? -1 : a > b ? 1 : 0
+                        //return message1.time > message2.time
+                    })
     }
 }
