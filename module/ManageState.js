@@ -7,7 +7,7 @@ export class ManageState {
     constructor(mailBox) {
         this.twitter        = TwitterAPI.get_client()
         this.mailBox        = mailBox
-        this.currentState   = ManageState.states.ask_for_handshake
+        this.currentState   = ManageState.states.initial_state
         this.ready_to_send = false;
         this.messageFactory = new MessageFactory(this.mailBox)
     }
@@ -35,7 +35,7 @@ export class ManageState {
         
         switch (this.currentState) {
             case ManageState.states.initial_state:
-                this.currentState = ManageState.states.ask_for_handshake
+                this.currentState = ManageState.states.posting_key
                 break
             case ManageState.states.posting_key:
                 this.mailBox.sendMessageObject(this.messageFactory.post_key(to))

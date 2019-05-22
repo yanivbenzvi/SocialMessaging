@@ -97,7 +97,6 @@ export class Sync {
     }
 
     async sendQueueMessages() {
-        console.log("sending messages in queue: ", this.mailBox.messages_queue);
         for (let message of this.mailBox.messages_queue) {
             await this.sendNewMessage(message)
         }
