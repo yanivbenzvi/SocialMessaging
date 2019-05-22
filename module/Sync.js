@@ -18,24 +18,24 @@ export class Sync {
         this._loop = async () => {
             await this.MangeState.handle()
             // await this.receiveNewMessages()
-            await this.sendQueueMessages()
+            // await this.sendQueueMessages()
         }
         this.loop = new IntervalLoop({
             loop_function: this._loop,
             wait_interval: wait_interval,
         })
+        this.clear_sending()
+        this.init_sending()
     }
 
     start() {
-        //this.clear_sending()
-        // this.init_sending()  /////////////////////////////////////////////////////////////////////
         // this.loop.start()
         this._loop();
     }
 
     stop() {
         // this.loop.stop() 
-        // this.clear_sending() /////////////////////////////////////////////////////////////////////////
+        this.clear_sending() /////////////////////////////////////////////////////////////////////////
     }
 
     init_sending() {

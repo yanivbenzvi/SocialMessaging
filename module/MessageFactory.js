@@ -37,7 +37,7 @@ export class MessageFactory {
     }
 
     post_key(to) {
-        console.log("posting key, key is ", this.mailBox.rsa.exportPublicKey());
+        // console.log("posting key, key is ", this.mailBox.rsa.exportPublicKey());
         return this._basic_message(to, Message.StatusCodes.post_key, this.mailBox.rsa.exportPublicKey())
     }
 
