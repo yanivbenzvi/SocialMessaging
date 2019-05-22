@@ -71,8 +71,7 @@ export class Sync {
             console.log("the key i'll encrypt message with is :", public_key)
 
             //encryption 
-            let encrypt_text = await this.mailBox.rsa.encrypt3dKey(message.body, this.mailBox.contacts.get_contact_key(message.to))
-            let encrypt_message = new MessageFactory(this.mailBox).plain_message(message.to, encrypt_text)
+            let encrypt_message = await new MessageFactory(this.mailBox).encrypted_message(message.to, message.body)
 
             let id = await this.twitter.post(encrypt_message.to_JSON())
             message.addAttributes({ twitterId: id })

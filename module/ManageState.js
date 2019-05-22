@@ -130,7 +130,9 @@ export class ManageState {
                     break
                 case Message.StatusCodes.post_key:
                     this.mailBox.contacts.update_contact(message.from, message.body)
-                    this.mailBox.sendMessageObject(this.messageFactory.post_handshake(message.from))
+                    let handshake = await this.messageFactory.post_handshake(message.from)
+                    console.log("handshake:",handshake);
+                    this.mailBox.sendMessageObject(handshake)
                     break
                 case Message.StatusCodes.message:
                     message.body = this.mailBox.rsa.decrypt(message.body)
