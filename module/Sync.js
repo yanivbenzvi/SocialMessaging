@@ -24,7 +24,7 @@ export class Sync {
             loop_function: this._loop,
             wait_interval: wait_interval,
         })
-        this.clear_sending()
+        // this.clear_sending()
         this.init_sending()
     }
 
@@ -40,7 +40,6 @@ export class Sync {
 
     init_sending() {
         eventify(this.mailBox.messages_queue, 'push', (message) => {
-            console.log('new task been created: sending new message.')
             this.sendNewMessage(message)
         })
     }
