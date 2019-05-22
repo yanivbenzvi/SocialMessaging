@@ -95,13 +95,13 @@
             },
 
             currentState() {
-                return this.sync ? this.sync.MangeState.currentState : 0
+                return this.sync ? this.sync.MangeState.currentState : ManageState.states.initial_state
             },
         },
 
         watch: {
             ['currentState']() {
-                this.state = Object.keys(ManageState.states)[this.currentState]
+                this.state = Object.keys(ManageState.states)[this.currentState] + (this.sync.MangeState.ready_to_send?", and ready to send":"")
             },
         },
 

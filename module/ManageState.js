@@ -129,13 +129,19 @@ export class ManageState {
                     this.ready_to_send = true;
                     break
                 case Message.StatusCodes.post_key:
+                    this.ready_to_send = false;
                     this.mailBox.contacts.update_contact(message.from, message.body)
                     let handshake = await this.messageFactory.post_handshake(message.from)
-                    console.log("handshake:",handshake);
                     this.mailBox.sendMessageObject(handshake)
                     break
                 case Message.StatusCodes.message:
-                    message.body = this.mailBox.rsa.decrypt(message.body)
+                    try{
+                        message.body = this.mailBox.rsa.decrypt(message.body)
+                    }
+                    catch{
+                        console.log("could not decrypt message");
+                        this.currentState.currentState = ManageState.states.posting_key;
+                    }
                     break
             }
             console.log('handleIncomingMessages: ', Object.keys(Message.StatusCodes)[message.status], message.status)
