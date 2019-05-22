@@ -41,7 +41,7 @@ export class MessageFactory {
         return this._basic_message(to, Message.StatusCodes.post_key, this.mailBox.rsa.exportPublicKey())
     }
 
-    async message(to, body) {
+    async encrypted_message(to, body) {
         // need to add encryption to this body, access encryption methods through this.mailBox
         const encrypt_message = await this.mailBox.rsa.encrypt3dKey(body, this.mailBox.contacts.get_contact_key(to))
         return this._basic_message(to, Message.StatusCodes.message, encrypt_message)
