@@ -24,7 +24,6 @@
                         <v-text-field
                                 v-model="plainTextMessage"
                                 height="65"
-                                append-icon="send"
                                 placeholder="your message..."
                                 @keydown.enter="appendMessage"
                                 @keydown.esc="appendMessage"
