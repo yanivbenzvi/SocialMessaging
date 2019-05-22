@@ -1,21 +1,24 @@
-import {Message} from '../../module/Message'
+import { MessageData } from '../../module/MessageData'
+import {Message}       from '../../module/Message'
 
 const expect = require('chai').expect
 
-describe('Message', () => {
+describe('MessageData', () => {
+    let normal_code = MessageData.StatusCodes.status;
     it('has the follow attribute', () => {
-        const message      = new Message()
-        const stub = Object.keys(message)
-        const attribute = ['to', 'from', 'time', 'body', 'readed', 'mKey', 'twitterId']
+        const message = new MessageData();
+        const stub = Object.keys(message);
+        const attribute = ['to', 'from', 'status', 'time', 'body'];
 
         expect(stub).to.be.eql(attribute)
     })
     describe('#Object', () => {
-        let message = new Message();
+        let message = new MessageData();
         let input = {
             to: "b",
-            from : "a",
-            time : "00:00:00",
+            from: "a",
+            status: normal_code,
+            time: "00:00:00",
             body: "this is a message",
         };
         let res = message.from_object(input);
@@ -25,17 +28,18 @@ describe('Message', () => {
             });
         });
         describe("#to_object", () => {
-            it("message.to_JSON() should mean the same as the input JSON", () => {
+            it("message.to_object() should mean the same as the input object", () => {
                 let object_export = message.to_object();
                 expect(object_export).to.be.deep.equal(input);
             })
         })
     });
     describe('#JSON', () => {
-        let message = new Message();
+        let message = new MessageData();
         let input = `{
             "to": "b",
             "from" : "a",
+            "status": "${normal_code}",
             "time" : "00:00:00",
             "body": "this is a message"
         }`;
@@ -44,6 +48,11 @@ describe('Message', () => {
             it("should be valid message", () => {
                 expect(message.is_valid()).to.be.equal(true);
             });
+
+            it('test', ()=>{
+                const json_text = `{"to":"B","from":"A","status":1,"time":"2019-05-20T16:13:38.412Z","body":"-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIfIAfV+5r0HG/uQCeYig9nXrrHfbWm6sfBzowTImL4HPwEtjw5tIhQBmlwyDnmrmVaY0UHPxqyV85Cj5jn751kCAwEAAQ==-----END PUBLIC KEY-----"}`
+                console.log(new Message().from_JSON(json_text))
+            })
         });
         describe("#to_JSON", () => {
             it("message.to_JSON() should mean the same as the input JSON", () => {
@@ -54,9 +63,9 @@ describe('Message', () => {
     });
 
     describe('#String', () => {
-        let message = new Message();
-        let terminal = Message._terminal();
-        let input = ["b","a","00:00:00","this is a message"].join(terminal);        
+        let message = new MessageData();
+        let terminal = MessageData._terminal();
+        let input = ["b", "a", normal_code, "00:00:00", "this is a message"].join(terminal);
         let res = message.from_string(input);
         describe('#from_string', () => {
             it("should be valid message", () => {

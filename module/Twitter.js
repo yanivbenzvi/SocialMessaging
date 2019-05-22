@@ -1,5 +1,4 @@
 import twitter from 'twitter'
-
 export class TwitterAPI {
 
     // should be private
@@ -53,13 +52,13 @@ export class TwitterAPI {
      */
     async pull(id) {
         let stat = 'statuses/show/' + id;
-        let json = await this.client.get(stat, {});
-        return json.text;
+        let json = await this.client.get(stat, {"tweet_mode":"extended"});
+        return json.full_text;
     }
 
     async pull_all() {
-        let json = await this.client.get("favorites/list", {});
-        return json.map(el => { return { id: el.id_str, text: el.text } });
+        let json = await this.client.get("favorites/list", {"tweet_mode":"extended"});
+        return json.map(el => { return { id: el.id_str, text: el.full_text } });
     }
     /**
      * async, destroys message using message id;

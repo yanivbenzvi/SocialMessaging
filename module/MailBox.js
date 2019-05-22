@@ -1,4 +1,7 @@
-import {Message} from './Message'
+import {Message}        from './Message'
+import {Contacts}       from './Contacts'
+import {MessageFactory} from './MessageFactory'
+import {Rsa}            from './Rsa'
 
 /**this is the main mail box class*/
 export class MailBox {
@@ -8,11 +11,12 @@ export class MailBox {
      * @param MailAddress
      */
     constructor(mailBoxObj = {}) {
-        this.ownerName           = mailBoxObj.ownerName
-        this.received_messages   = []
-        this.sent_messages       = []
-        this.messages_queue      = []
-        this.newMessagesArrIndex = []
+        this.ownerName         = mailBoxObj.ownerName
+        this.received_messages = []
+        this.sent_messages     = []
+        this.messages_queue    = []
+        this.contacts          = new Contacts()
+        this.rsa               = new Rsa()
     }
 
     /**
@@ -20,16 +24,13 @@ export class MailBox {
      * and will push the message to the message queue.
      */
     sendMessage(to, textMessage) {
-        let messageObject = {
-            to:        to,
-            from:      this.ownerName,
-            address:   this.ownerName,
-            time: new Date(),
-            body:      textMessage,
-        }
+        let messageObject = new MessageFactory(this).plain_message(to, textMessage)
+        let message       = new Message(messageObject)
+        this.sendMessageObject(message)
+    }
 
-        let message = new Message(messageObject)
-        this.messages_queue.push(message)
+    sendMessageObject(messageObject) {
+        this.messages_queue.push(messageObject)
     }
 
     /**
@@ -57,8 +58,12 @@ export class MailBox {
         return Array.from(this.received_messages)
                     .concat(this.sent_messages)
                     .concat(this.messages_queue)
+                    .filter(message => message.status == Message.StatusCodes.message)
                     .sort((message1, message2) => {
-                        return message1.time > message2.time
+                        const a = new Date(message1.time),
+                              b = new Date(message2.time)
+                        return a < b ? -1 : a > b ? 1 : 0
+                        //return message1.time > message2.time
                     })
     }
 }

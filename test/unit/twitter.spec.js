@@ -1,6 +1,4 @@
-import { TwitterAPI } from '../../module/twitter'
-import { resolve } from 'path';
-import { reject } from 'q';
+import { TwitterAPI } from '../../module/Twitter'
 
 const chai = require('chai');
 const expect = chai.expect;

@@ -1,95 +1,110 @@
-//This is user B.
-//B will read all the time from user A
-
-// import {TwitterAPI} from "./twitter"
-import {TwitterAPI} from './Twitter'
-import {Message} from './Message'
+import { TwitterAPI } from './Twitter'
+import { Message } from './Message'
+import { IntervalLoop } from './IntervalLoop'
+import { eventify, eventify_clear, array_remove } from './utils/Utils'
+import { ManageState } from './ManageState'
+import { MessageFactory } from './MessageFactory';
 
 export class Sync {
 
-    constructor(mailBox, options) {
-        for (let attr in options) {
-            this[attr] = options[attr]
-        }
-        if (!this.wait_interval) {
-            this.wait_interval = 1000; //1 sec
-        }
-        this.twitter = TwitterAPI.get_client();
-        this.mailBox = mailBox;
-        this._stop = false;
-        this._loop;
-    }
+    constructor(mailBox, options = {}) {
+        this.twitter = TwitterAPI.get_client()
+        this.mailBox = mailBox
+        this.MangeState = new ManageState(mailBox)
+        console.log('current state:', Object.keys(ManageState.states)[this.MangeState.currentState], this.MangeState.currentState)
 
-    async refresh(){
-        await this.sendAndReceive();
+        let { wait_interval } = options
+        wait_interval = !wait_interval ? 1000 : wait_interval
+        this._loop = async () => {
+            await this.MangeState.handle()
+            // await this.receiveNewMessages()
+            // await this.sendQueueMessages()
+        }
+        this.loop = new IntervalLoop({
+            loop_function: this._loop,
+            wait_interval: wait_interval,
+        })
+        // this.clear_sending()
+        this.init_sending()
     }
 
     start() {
-        this._stop = false;
-        let loop   = async () => {
-            await this.refresh();
-            if (!this._stop) {
-                this._loop = setTimeout(loop, this.wait_interval);
-            }
-        }
-        loop();
+        // this.loop.start()
+        this._loop();
     }
 
     stop() {
-        clearTimeout(this._loop);
-        this._stop = true;
+        // this.loop.stop() 
+        this.clear_sending() /////////////////////////////////////////////////////////////////////////
     }
 
-    async sendAndReceive() {
-        await this.receiveNewMessage();
-        await this.sendNewMessage();
-    }
-
-    async receiveNewMessage() {
-        let messages = await this.twitter.pull_all();
-        console.log(messages);
-        messages.map(obj => {
-            let {id, text} = obj;
-            let cur_message   = new Message();
-            cur_message.from_JSON(text);
-            cur_message.twitterId = id;
-            return cur_message;
-        }).filter((message) => {
-            return message.to === this.mailBox.ownerName;
-        }).forEach(async message => {
-            this.mailBox.received_messages.push(message);
-            await this.twitter.destroy(message.twitterId);
+    init_sending() {
+        eventify(this.mailBox.messages_queue, 'push', (message) => {
+            this.sendNewMessage(message)
         })
     }
 
-    sendNewMessage() {
-        this.mailBox.messages_queue.forEach(async message => {
-            let id = await this.twitter.post(message.to_JSON());
-            console.log('sent a new message: ',id);
+    clear_sending() {
+        eventify_clear(this.mailBox.messages_queue)
+    }
+
+
+    async sendNewMessage(message) {
+        if (message.status === Message.StatusCodes.message) {
+            return await this.sendNormalMessage(message);
+        }
+        else {
+            return await this.sendMessage(message);
+        }
+    }
+
+    async sendNormalMessage(message) {
+        if (this.MangeState.ready_to_send) {
+            let public_key = this.mailBox.contacts.get_contact_key(message.to)
+
+            /////cand add ask for key here///////////////////////////////////////////////////////////
+            if(!public_key){
+                console.log("i dont have a public key of destination, error");
+                return;
+            }
+            console.log("the key i'll encrypt message with is :", public_key)
+
+            //encryption 
+            let encrypt_message = await new MessageFactory(this.mailBox).encrypted_message(message.to, message.body)
+
+            let id = await this.twitter.post(encrypt_message.to_JSON())
+            message.addAttributes({ twitterId: id })
+            console.log('sent a new encrypted message: ', message)
+            array_remove(this.mailBox.messages_queue, message)
+            this.mailBox.sent_messages.push(message)
+        } else {
+            console.log('not ready to send yet.')
+        }
+    }
+
+    async sendMessage(message) {
+        try {
+            let id = await this.twitter.post(message.to_JSON())
+            message.addAttributes({ twitterId: id })
+            console.log('sent a new message: ', message)
+            array_remove(this.mailBox.messages_queue, message)
+            this.mailBox.sent_messages.push(message)
+        } catch (err) {
+            console.log('failed sending, will do again later', err)
+        }
+    }
+
+    async sendQueueMessages() {
+        for (let message of this.mailBox.messages_queue) {
+            await this.sendNewMessage(message)
+        }
+    }
+
+    async clearTwitter() {
+        console.log('clean all Twitter messages')
+        let messages = await this.twitter.pull_all()
+        messages.forEach(async (item) => {
+            await this.twitter.destroy(item.id)
         })
-        this.mailBox.sent_messages  = this.mailBox.sent_messages.concat(this.mailBox.messages_queue);
-        this.mailBox.messages_queue = [];
     }
 }
-
-// function test() {
-//     let x = new Reader({ wait_interval: 10 });
-
-//     var counter = 10
-//     let stop_after_10_message_read = (m) => {
-//         console.log(counter);
-
-//         counter--;
-//         if (counter == 0) {
-//             console.log("stopping");
-//             x.stop()
-//         }
-//     }
-//     x.start(stop_after_10_message_read);
-//     setTimeout(() => {
-//         x.stop(); console.log("stopped")
-//         setTimeout(() => {
-//             console.log("done")
-//         }, 3000)
-//     }, 7000)
-// }
