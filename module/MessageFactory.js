@@ -18,13 +18,17 @@ export class MessageFactory {
         return this._basic_message(to, Message.StatusCodes.ask_for_handshake, '')
     }
 
+    ready_to_receive(to){
+        return this._basic_message(to, Message.StatusCodes.ready_to_receive, '')
+    }
+
     async post_handshake(to) {
-        console.log('##################### handshake ########################')
-        console.log('MessageFactory.handshake_text: ', MessageFactory.handshake_text)
-        console.log('this.mailBox.contacts.get_contact_key(to): ', this.mailBox.contacts.get_contact_key(to))
+        // console.log('##################### handshake ########################')
+        // console.log('MessageFactory.handshake_text: ', MessageFactory.handshake_text)
+        // console.log('this.mailBox.contacts.get_contact_key(to): ', this.mailBox.contacts.get_contact_key(to))
         const encrypt_handshake = await this.mailBox.rsa.encrypt3dKey(MessageFactory.handshake_text, this.mailBox.contacts.get_contact_key(to))
-        console.log('to: ', to)
-        console.log('encrypt_handshake: ', encrypt_handshake)
+        // console.log('to: ', to)
+        // console.log('encrypt_handshake: ', encrypt_handshake)
         return this._basic_message(to, Message.StatusCodes.post_handshake, encrypt_handshake)
     }
 

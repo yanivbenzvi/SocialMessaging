@@ -8,48 +8,38 @@ export class ManageState {
         this.twitter        = TwitterAPI.get_client()
         this.mailBox        = mailBox
         this.currentState   = ManageState.states.ask_for_handshake
+        this.ready_to_send = false;
         this.messageFactory = new MessageFactory(this.mailBox)
     }
 
     static get states() {
         return {
             initial_state:                0,
-            ask_for_handshake:            1,
+            posting_key:                  1,
             waiting_for_handshake:        2,
-            ask_for_key:                  3,
-            waiting_for_key:              4,
-            ready_to_start_communication: 5,
+            ready_to_receive:             3,
         }
     }
 
     async handle() {
         //receive all message from twitter
         const messages = await this.getAllTwitterMessage()
-        const relevent_messages = messages[0]
-        const not_relevent_messages = messages[1]
 
         //filter message and look for status code {ask_for_handshake} and send handshake
-        await this.handleIncomingMessages(relevent_messages)
+        await this.handleIncomingMessages(messages)
         await this.handleState(messages)
     }
 
     async handleState(messages) {
-        const not_relevent_messages = messages[1]
-        messages = messages[0]
         const to = this.mailBox.ownerName === 'A' ? 'B' : 'A'
         
         switch (this.currentState) {
             case ManageState.states.initial_state:
                 this.currentState = ManageState.states.ask_for_handshake
                 break
-            case ManageState.states.ask_for_handshake:
-                //send message with status code {handshake} (asking for handshake) only if 'to' contact has a key
-                if (!this.mailBox.contacts.get_contact_key(to)) {
-                    this.currentState = ManageState.states.ask_for_key
-                } else {
-                    this.mailBox.sendMessageObject(this.messageFactory.ask_for_handshake(to))
-                    this.currentState = ManageState.states.waiting_for_handshake
-                }
+            case ManageState.states.posting_key:
+                this.mailBox.sendMessageObject(this.messageFactory.post_key(to))
+                this.currentState = ManageState.states.waiting_for_handshake
                 break
             case ManageState.states.waiting_for_handshake:
                 //filter message and look for message with status code {sending_handshake}
@@ -57,30 +47,15 @@ export class ManageState {
                 //if we not succeed to decode handshake message state will changed to has_no_key
                 //else change state to {ready_to_start_communication}
                 if (this.getMessagesByStatusCode(messages, Message.StatusCodes.post_handshake).length > 0) {
-                    console.log(messages)
                     if (this.verifyHandshake(messages)) {
-                        this.currentState = ManageState.states.ready_to_start_communication
+                        console.log("verified the handshake");
+                        this.mailBox.sendMessageObject(this.messageFactory.ready_to_receive(to))
+                        this.currentState = ManageState.states.ready_to_receive
                     } else {
+                        console.log("failed verifing handshake");
                         this.mailBox.contacts.update_contact(to,"")
-                        this.currentState = ManageState.states.ask_for_key
+                        this.currentState = ManageState.states.posting_key;
                     }
-                }
-                else{
-                    if(not_relevent_messages.filter(message=>message.from==this.mailBox.ownerName&&message.to==to&&message.status==Message.StatusCodes.ask_for_handshake)==0){
-                        this.currentState=ManageState.states.ask_for_handshake;
-                    }
-                }
-                break
-            case ManageState.states.ask_for_key:
-                //send message with code {ask_for_key}
-                this.mailBox.sendMessageObject(this.messageFactory.ask_for_key(to))
-                this.currentState = ManageState.states.waiting_for_key
-                break
-            case ManageState.states.waiting_for_key:
-                //filter message and look for message with status code {ask_for_key}
-                //if we get new key go back to back to {ask_for_handshake}
-                if (this.mailBox.contacts.get_contact_key(to)) {
-                    this.currentState = ManageState.states.ask_for_handshake
                 }
                 break
             case ManageState.states.ready_to_start_communication:
@@ -103,9 +78,9 @@ export class ManageState {
             return message.to === this.mailBox.ownerName
         })
         
-        let not_relevent_messages = messages.filter((message) => {
-            return message.to !== this.mailBox.ownerName
-        })
+        // let not_relevent_messages = messages.filter((message) => {
+        //     return message.to !== this.mailBox.ownerName
+        // })
 
         //destroy
         relevent_messages.forEach(async message => {
@@ -113,7 +88,7 @@ export class ManageState {
             await this.twitter.destroy(message.twitterId)
         })
 
-        return [relevent_messages,not_relevent_messages]
+        return relevent_messages;
     }
 
     verifyHandshake(messages) {
@@ -123,9 +98,9 @@ export class ManageState {
         }
         handshake_messages = Array.isArray(handshake_messages) ? handshake_messages[0] : handshake_messages
         const decryptMessage = this.mailBox.rsa.decrypt(handshake_messages.body)
-        console.log('######################## received handshake now verify #####################')
-        console.log('decryptMessage: ', decryptMessage)
-        console.log('verify successfully: ',MessageFactory.verify_handshake_message(decryptMessage))
+        // console.log('######################## received handshake now verify #####################')
+        // console.log('decryptMessage: ', decryptMessage)
+        // console.log('verify successfully: ',MessageFactory.verify_handshake_message(decryptMessage))
         return MessageFactory.verify_handshake_message(decryptMessage) // should check if handshake actually succeded
     }
 
@@ -138,19 +113,24 @@ export class ManageState {
     async handleIncomingMessages(messages) {
         await messages.forEach(async message => {
             switch (message.status) {
+                // case Message.StatusCodes.ask_for_handshake:
+                //     if(!this.mailBox.contacts.get_contact_key(message.from)){
+                //         this.mailBox.sendMessageObject(this.messageFactory.ask_for_key(message.from))
+                //     }
+                //     else{
+                //         this.ready_to_send = false
+                //         this.mailBox.sendMessageObject(await this.messageFactory.post_handshake(message.from))
+                //     }
+                //     break
                 case Message.StatusCodes.ask_for_key:
-                    this.mailBox.sendMessageObject(this.messageFactory.post_key(message.from))
+                    this.mailBox.sendMessageObject(this.messageFactory.post_key(message.from));
                     break
-                case Message.StatusCodes.ask_for_handshake:
-                    if(!this.mailBox.contacts.get_contact_key(message.from)){
-                        this.currentState = ManageState.states.ask_for_key;
-                    }
-                    else{
-                        this.mailBox.sendMessageObject(await this.messageFactory.post_handshake(message.from))
-                    }
+                case Message.StatusCodes.ready_to_receive:
+                    this.ready_to_send = true;
                     break
                 case Message.StatusCodes.post_key:
                     this.mailBox.contacts.update_contact(message.from, message.body)
+                    this.mailBox.sendMessageObject(this.messageFactory.post_handshake(message.from))
                     break
                 case Message.StatusCodes.message:
                     message.body = this.mailBox.rsa.decrypt(message.body)

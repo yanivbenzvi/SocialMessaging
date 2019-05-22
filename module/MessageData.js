@@ -14,6 +14,7 @@ export class MessageData {
             ask_for_key:       2,
             post_handshake:    3,
             ask_for_handshake: 4,
+            ready_to_receive:   5,
         }
     }
 
